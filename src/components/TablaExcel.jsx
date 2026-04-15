@@ -94,7 +94,7 @@ export default function TablaExcel({ pagos, cfg, onToggle, onDelete, onEdit, com
                 <td style={tdStyle({ borderRight: 'none' })}>
                   <div style={{ display: 'flex', gap: 3, justifyContent: 'center' }}>
                     <button onClick={() => navigate('/pagos', { state: { editId: p.id } })} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>e</button>
-                    <button onClick={() => onDelete(p.id)} style={{ background: 'var(--red-bg)', border: '1px solid var(--red-border)', color: 'var(--red)', borderRadius: 'var(--rs)', padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>x</button>
+                    <button onClick={() => onEdit(p)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>e</button>
                   </div>
                 </td>
               </tr>
