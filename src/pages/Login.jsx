@@ -1,14 +1,32 @@
+import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../hooks/useAuth'
+import { jwtDecode } from 'jwt-decode'
+
+const EMAILS_AUTORIZADOS = [
+  'yingoadministracion@gmail.com',
+]
 
 export default function Login() {
   const { login } = useAuth()
 
-  const handleDemo = () => {
+  const handleSuccess = (credentialResponse) => {
+    const decoded = jwtDecode(credentialResponse.credential)
+    const email = decoded.email
+
+   const EMAILS_AUTORIZADOS = [
+  'yingoadministracion@gmail.com',
+  'emmanuelmillar.5@gmail.com',
+]
+
     login({
-      name: 'Administrador',
-      email: 'yingoadministracion@gmail.com',
-      avatar: null
+      name: decoded.name,
+      email: decoded.email,
+      avatar: decoded.picture,
     })
+  }
+
+  const handleError = () => {
+    alert('Error al iniciar sesión con Google. Intentá de nuevo.')
   }
 
   return (
@@ -26,23 +44,23 @@ export default function Login() {
         padding: '32px 40px', width: 340, textAlign: 'center', boxShadow: 'var(--shadow)'
       }}>
         <div style={{ fontSize: 14, color: 'var(--text2)', marginBottom: 24 }}>
-          Ingresá a tu cuenta para continuar
+          Ingresá con tu cuenta de Google
         </div>
 
-        <button
-          onClick={handleDemo}
-          style={{
-            width: '100%', padding: '12px 20px', borderRadius: 'var(--rs)',
-            background: 'var(--accent)', color: '#fff', fontSize: 13,
-            fontWeight: 700, cursor: 'pointer', border: 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10
-          }}
-        >
-          Ingresar como Administrador
-        </button>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <GoogleLogin
+            onSuccess={handleSuccess}
+            onError={handleError}
+            useOneTap
+            theme="filled_black"
+            shape="rectangular"
+            text="signin_with"
+            locale="es"
+          />
+        </div>
 
         <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 20 }}>
-          Google Auth se configurará próximamente
+          Solo emails autorizados pueden acceder
         </div>
       </div>
     </div>
