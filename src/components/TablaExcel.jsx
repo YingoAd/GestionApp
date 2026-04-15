@@ -90,7 +90,9 @@ export default function TablaExcel({ pagos, cfg, onToggle, onDelete, onEdit, com
                 <td style={tdStyle({ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 700, whiteSpace: 'nowrap' })}>{fARS(p.gastoARS)}</td>
                 <td style={tdStyle({ borderRight: 'none' })}>
                   <div style={{ display: 'flex', gap: 3, justifyContent: 'center' }}>
-                    <button onClick={() => onEdit(p)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>e</button>
+                    {onEdit && (
+  <button onClick={() => onEdit(p)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>e</button>
+)}
                     <button onClick={() => onDelete(p.id)} style={{ background: 'var(--red-bg)', border: '1px solid var(--red-border)', color: 'var(--red)', borderRadius: 'var(--rs)', padding: '4px 8px', fontSize: 11, cursor: 'pointer' }}>x</button>
                   </div>
                 </td>
