@@ -152,7 +152,6 @@ export default function Dashboard() {
           { label: 'Pendiente semana', value: fARS(tpARS), sub: `${pagosSemana.filter(p => p.estado === 'Pendiente').length} pago(s)`, color: 'var(--text)' },
           { label: 'Pagado semana', value: fARS(tpgARS), sub: `${pagosSemana.filter(p => p.estado === 'Pagado').length} pago(s)`, color: 'var(--green)' },
           { label: 'Arrastre', value: arrastre.length, sub: 'pagos sin ejecutar', color: arrastre.length > 0 ? 'var(--yellow)' : 'var(--text)' },
-          { label: 'Alertas', value: alCount, sub: alCount > 0 ? 'Requieren atencion' : 'Todo OK', color: alCount > 0 ? 'var(--red)' : 'var(--green)' },
         ].map(s => (
           <div key={s.label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '14px 18px' }}>
             <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '.8px', marginBottom: 4 }}>{s.label}</div>
