@@ -129,21 +129,21 @@ useEffect(() => {
 
   return (
     <div>
-      {/* Week nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button onClick={() => { setWeekOffset(w => w - 1); setSelectedDay(null) }}
-            style={{ background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '5px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-            Anterior
-          </button>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 12, fontWeight: 700 }}>{esHoy ? 'Semana actual' : weekOffset > 0 ? `+${weekOffset} sem.` : `${Math.abs(weekOffset)} sem. atras`}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)' }}>{fDate(wId)} — {fDate(d2s(dom))}</div>
-          </div>
-          <button onClick={() => { setWeekOffset(w => w + 1); setSelectedDay(null) }}
-            style={{ background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '5px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-            Siguiente
-          </button>
+     {/* Week nav */}
+<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, gap: 8 }}>
+  <button onClick={() => { setWeekOffset(w => w - 1); setSelectedDay(null) }}
+    style={{ background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '8px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1 }}>
+    ◀ Anterior
+  </button>
+  <div style={{ textAlign: 'center', flex: 2 }}>
+    <div style={{ fontSize: 12, fontWeight: 700 }}>{esHoy ? 'Semana actual' : weekOffset > 0 ? `+${weekOffset} sem.` : `${Math.abs(weekOffset)} sem. atras`}</div>
+    <div style={{ fontSize: 11, color: 'var(--text3)' }}>{fDate(wId)} — {fDate(d2s(dom))}</div>
+  </div>
+  <button onClick={() => { setWeekOffset(w => w + 1); setSelectedDay(null) }}
+    style={{ background: 'var(--bg3)', border: '1px solid var(--border)', color: 'var(--text2)', borderRadius: 'var(--rs)', padding: '8px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1 }}>
+    Siguiente ▶
+  </button>
+</div>
           {weekOffset !== 0 && (
             <button onClick={() => { setWeekOffset(0); setSelectedDay(null) }}
               style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text3)', borderRadius: 'var(--rs)', padding: '5px 12px', fontSize: 12, cursor: 'pointer' }}>
