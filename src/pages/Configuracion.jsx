@@ -12,9 +12,17 @@ export default function Configuracion() {
   const [newRubro, setNewRubro] = useState('')
   const [conceptos, setConceptos] = useState(data.conceptos)
   const [newConcepto, setNewConcepto] = useState('')
-  const [cuentas, setCuentas] = useState(data.cuentas || ["Caja principal","Caja obra","Banco Nacion Cta.Cte.","Banco Galicia Cta.Cte.","Banco Santander Cta.Cte.","Banco BBVA Cta.Cte.","Banco Macro Cta.Cte.","Otra cuenta"])
-  const [newCuenta, setNewCuenta] = useState('')
-
+const [cuentas, setCuentas] = useState(data.cuentas || [
+  { nombre: "Caja principal", desc: "" },
+  { nombre: "Caja obra", desc: "" },
+  { nombre: "Banco Nacion Cta.Cte.", desc: "" },
+  { nombre: "Banco Galicia Cta.Cte.", desc: "" },
+  { nombre: "Banco Santander Cta.Cte.", desc: "" },
+  { nombre: "Banco BBVA Cta.Cte.", desc: "" },
+  { nombre: "Banco Macro Cta.Cte.", desc: "" },
+  { nombre: "Otra cuenta", desc: "" },
+])
+const [newCuenta, setNewCuenta] = useState({ nombre: '', desc: '' })
   const save = () => {
   update(d => ({
     ...d,
@@ -177,22 +185,49 @@ export default function Configuracion() {
         )}
 
         {tab === 'cuentas' && (
+  <div>
+    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Cuentas / Cajas ({cuentas.length})</div>
+    <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 14 }}>
+      Aparecen como opciones al cargar un pago en el campo Caja/Cuenta.
+    </div>
+    {/* Agregar nueva */}
+    <div style={{ display: 'grid', gap: 8, marginBottom: 14, padding: 12, background: 'var(--bg3)', borderRadius: 'var(--rs)', border: '1px solid var(--border)' }}>
+      <input
+        value={newCuenta.nombre}
+        onChange={e => setNewCuenta(c => ({ ...c, nombre: e.target.value }))}
+        placeholder="Nombre de la cuenta / caja..."
+        style={{ width: '100%' }}
+      />
+      <input
+        value={newCuenta.desc}
+        onChange={e => setNewCuenta(c => ({ ...c, desc: e.target.value }))}
+        placeholder="Descripcion (ej: titular, banco, uso)..."
+        style={{ width: '100%' }}
+      />
+      <button
+        onClick={addCuenta}
+        style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--rs)', padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', width: 'fit-content' }}>
+        + Agregar
+      </button>
+    </div>
+    {/* Lista */}
+    <div style={{ maxHeight: 380, overflowY: 'auto' }}>
+      {cuentas.map((c, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--rs)', marginBottom: 6 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Cuentas / Cajas ({cuentas.length})</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 14 }}>
-              Aparecen como opciones al cargar un pago en el campo Caja/Cuenta.
-            </div>
-            <ListEditor
-              items={cuentas}
-              onRemove={i => setCuentas(l => l.filter((_, j) => j !== i))}
-              newVal={newCuenta}
-              setNewVal={setNewCuenta}
-              onAdd={addCuenta}
-              placeholder="Nueva cuenta o caja..."
-            />
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{c.nombre}</div>
+            {c.desc && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{c.desc}</div>}
           </div>
-        )}
-      </div>
+          <button
+            onClick={() => setCuentas(l => l.filter((_, j) => j !== i))}
+            style={{ background: 'var(--red-bg)', border: '1px solid var(--red-border)', color: 'var(--red)', borderRadius: 'var(--rs)', padding: '3px 8px', fontSize: 11, cursor: 'pointer', flexShrink: 0, marginLeft: 8 }}>
+            x
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
       <div style={{ marginTop: 18 }}>
         <button onClick={save}

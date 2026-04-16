@@ -189,7 +189,18 @@ function PagoForm({ init, obras, rubros, conceptos, proveedores, onSave, onClose
                   </select>
                 </>
               )}
-              {fg(<>{label('Caja/Cuenta')}{sel('cuenta', CUENTAS)}</>)}
+              {fg(
+  <>
+    {label('Caja/Cuenta')}
+    <select className="fs" value={f.cuenta} onChange={ev=>set('cuenta',ev.target.value)}>
+      {(cuentas||[]).map(c => {
+        const nombre = typeof c === 'string' ? c : c.nombre
+        const desc = typeof c === 'string' ? '' : c.desc
+        return <option key={nombre} value={nombre}>{nombre}{desc ? ` — ${desc}` : ''}</option>
+      })}
+    </select>
+  </>
+)}
             </div>
 
             <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
