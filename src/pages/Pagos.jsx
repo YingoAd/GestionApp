@@ -342,17 +342,18 @@ export default function Pagos() {
         <TablaExcel pagos={filtered} cfg={data.alertConfig} onToggle={toggleEstado} onDelete={deletePago} onEdit={openEdit} />
       </div>
 
-      {modal && (
-        <PagoForm
-          init={modal}
-          obras={data.obras}
-          rubros={data.rubros}
-          conceptos={data.conceptos}
-          proveedores={data.proveedores}
-          onSave={savePago}
-          onClose={() => setModal(null)}
-        />
-      )}
+     {modal && (
+  <PagoForm
+    init={modal}
+    obras={data.obras}
+    rubros={data.rubros}
+    conceptos={data.conceptos}
+    cuentas={data.cuentas}
+    proveedores={data.proveedores}
+    onSave={savePago}
+    onClose={() => setModal(null)}
+  />
+)}
     </div>
   )
 }
