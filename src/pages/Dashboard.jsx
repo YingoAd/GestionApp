@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { useStore } from '../store/useStore'
 import { getLunes, addDays, d2s, fDate, fARS, getAlert } from '../utils/helpers'
@@ -41,6 +41,13 @@ export default function Dashboard() {
   const [weekOffset, setWeekOffset] = useState(0)
   const [activeTipos, setActiveTipos] = useState({ Efectivo: true, Transferencia: true, Echeq: true })
   const [selectedDay, setSelectedDay] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+useEffect(() => {
+  const handler = () => setIsMobile(window.innerWidth <= 768)
+  window.addEventListener('resize', handler)
+  return () => window.removeEventListener('resize', handler)
+}, [])
 
   const lb = addDays(getLunes(), weekOffset * 7)
   const wId = d2s(lb)
@@ -203,13 +210,7 @@ export default function Dashboard() {
                 return fecha ? `${dia}\n${fecha.slice(8)}/${fecha.slice(5,7)}` : dia
               }}
             />
-            <YAxis
-              tick={{ fill: 'var(--text3)', fontSize: 11 }}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={formatYAxis}
-              width={60}
-            />
+            <YAxis hide={isMobile} tick={{ fill: 'var(--text3)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={formatYAxis} width={isMobile ? 0 : 60} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(79,124,255,.08)' }} />
             {activeTipos.Efectivo && (
   <Bar dataKey="Efectivo" fill={TIPO_COLORS.Efectivo} radius={[4,4,0,0]}>
