@@ -7,7 +7,7 @@ import TablaExcel from '../components/TablaExcel'
 const TIPOS = ["Efectivo", "Transferencia", "Echeq"]
 const ECHEQ_VARS = ["Echeq","Echeq-n1","Echeq-n2","Echeq-n3","Echeq-n4","Echeq-n5","Echeq-n6","Echeq-n7","Echeq-n8","Echeq-n9","Echeq-n10"]
 const FORMAS = ["Efectivo en mano","Cheque propio","Cheque tercero","Transferencia bancaria","Echeq emitido","Echeq recibido","Tarjeta"]
-const CUENTAS = ["Caja principal","Caja obra","Banco Nacion Cta.Cte.","Banco Galicia Cta.Cte.","Banco Santander Cta.Cte.","Banco BBVA Cta.Cte.","Banco Macro Cta.Cte.","Otra cuenta"]
+const CUENTAS = ["BCOOP-024049/5","BCOOP-013170/4","BCOOP-023030/2","BCOOP-023519/2","BGAL-0376/9","BNACION-427310","BNACION-26157","BPROV-91613/2","CAJA JERE","MARTIN.P-USD"]
 const ESTADOS = ["Pendiente","Pagado","Vencido"]
 const RECIBOS = ["Factura A","Factura B","Factura C","Recibo","Remito","Otro"]
 
@@ -193,11 +193,11 @@ function PagoForm({ init, obras, rubros, conceptos, proveedores, onSave, onClose
   <>
     {label('Caja/Cuenta')}
     <select className="fs" value={f.cuenta} onChange={ev=>set('cuenta',ev.target.value)}>
-      {(cuentas||[]).map(c => {
-        const nombre = typeof c === 'string' ? c : c.nombre
-        const desc = typeof c === 'string' ? '' : c.desc
-        return <option key={nombre} value={nombre}>{nombre}{desc ? ` — ${desc}` : ''}</option>
-      })}
+      {(cuentas||CUENTAS).map(c => {
+  const nombre = typeof c === 'string' ? c : c.nombre
+  const desc = typeof c === 'string' ? '' : c.desc
+  return <option key={nombre} value={nombre}>{nombre}{desc ? ` — ${desc}` : ''}</option>
+})}
     </select>
   </>
 )}
