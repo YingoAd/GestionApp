@@ -50,11 +50,11 @@ export default function Informes() {
     return 'INFORME'
   }
 
-  const handleExportar = () => {
-    const pagos = filtrarPagos()
-    if (!pagos.length) { alert('No hay pagos para exportar con los filtros seleccionados.'); return }
-    exportarPagosExcel(pagos, getSemanaLabel())
-  }
+ const handleExportar = () => {
+  const pagos = filtrarPagos()
+  if (!pagos.length) { alert('No hay pagos para exportar con los filtros seleccionados.'); return }
+  exportarPagosHTML(pagos, getSemanaLabel())
+}
 
   const totalARS = pagosPreview.reduce((s, p) => s + (p.gastoARS || 0), 0)
   const totalUSD = pagosPreview.reduce((s, p) => s + (p.gastoUSD || 0), 0)
