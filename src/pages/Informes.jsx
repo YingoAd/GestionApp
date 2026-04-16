@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { getLunes, addDays, d2s, fDate, fARS } from '../utils/helpers'
-import { exportarPagosExcel } from '../utils/exportExcel'
+import { exportarPagosHTML } from '../utils/exportHTML'
 
 export default function Informes() {
   const { data } = useStore()
