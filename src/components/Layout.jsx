@@ -167,7 +167,7 @@ export default function Layout() {
             {/* Hamburguesa mobile */}
             <button className="hamburger-btn"
               onClick={() => setMenuOpen(v => !v)}
-              style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: 'var(--rs)', padding: '6px 10px', fontSize: 16, cursor: 'pointer', display: 'none' }}>
+              style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: 'var(--rs)', padding: '6px 10px', fontSize: 16, cursor: 'pointer' }}>
               ☰
             </button>
             <div style={{ fontWeight: 700, fontSize: 13 }}>
