@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useStore } from '../store/useStore'
@@ -85,6 +85,13 @@ function AlertasPanel({ pagos, alertConfig, onClose, onToggle }) {
 }
 
 export default function Layout() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+useEffect(() => {
+  const handler = () => setIsMobile(window.innerWidth <= 768)
+  window.addEventListener('resize', handler)
+  return () => window.removeEventListener('resize', handler)
+}, [])
   const { user, logout } = useAuth()
   const { data, update } = useStore()
   const navigate = useNavigate()
@@ -119,11 +126,11 @@ export default function Layout() {
     <div style={{ display: 'flex', minHeight: '100vh' }}>
 
       {/* SIDEBAR desktop */}
-      <div className="sidebar-desktop" style={{
-        width: 215, background: 'var(--bg2)', borderRight: '1px solid var(--border)',
-        display: 'flex', flexDirection: 'column', flexShrink: 0,
-        position: 'sticky', top: 0, height: '100vh', overflowY: 'auto'
-      }}>
+      <div style={{
+  width: 215, background: 'var(--bg2)', borderRight: '1px solid var(--border)',
+  display: isMobile ? 'none' : 'flex', flexDirection: 'column', flexShrink: 0,
+  position: 'sticky', top: 0, height: '100vh', overflowY: 'auto'
+}}>
         <div style={{ padding: '16px 14px 12px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>GestPagos</div>
           <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 1, textTransform: 'uppercase', letterSpacing: '.8px' }}>v4 · Constructora</div>
@@ -165,11 +172,12 @@ export default function Layout() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {/* Hamburguesa mobile */}
-            <button className="hamburger-btn"
-              onClick={() => setMenuOpen(v => !v)}
-              style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: 'var(--rs)', padding: '6px 10px', fontSize: 16, cursor: 'pointer' }}>
-              ☰
-            </button>
+            {isMobile && (
+  <button onClick={() => setMenuOpen(v => !v)}
+    style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: 'var(--rs)', padding: '6px 10px', fontSize: 16, cursor: 'pointer' }}>
+    ☰
+  </button>
+)}
             <div style={{ fontWeight: 700, fontSize: 13 }}>
               {navItems.find(n => n.path === location.pathname)?.label || 'GestPagos'}
             </div>
