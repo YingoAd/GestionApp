@@ -194,10 +194,10 @@ function PagoForm({ init, obras, rubros, conceptos, cuentas, proveedores, onSave
     {label('Caja/Cuenta')}
     <select className="fs" value={f.cuenta} onChange={ev=>set('cuenta',ev.target.value)}>
       {(cuentas||CUENTAS).map(c => {
-  const nombre = typeof c === 'string' ? c : c.nombre
-  const desc = typeof c === 'string' ? '' : c.desc
-  return <option key={nombre} value={nombre}>{nombre}{desc ? ` — ${desc}` : ''}</option>
-})}
+        const nombre = typeof c === 'string' ? c : c.nombre
+        const desc = typeof c === 'string' ? '' : c.desc
+        return <option key={nombre} value={nombre}>{nombre}{desc ? ` — ${desc}` : ''}</option>
+      })}
     </select>
   </>
 )}
