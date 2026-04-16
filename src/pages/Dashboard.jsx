@@ -146,20 +146,20 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 20 }}>
-        {[
-          { label: 'Pendiente semana', value: fARS(tpARS), sub: `${pagosSemana.filter(p => p.estado === 'Pendiente').length} pago(s)`, color: 'var(--text)' },
-          { label: 'Pagado semana', value: fARS(tpgARS), sub: `${pagosSemana.filter(p => p.estado === 'Pagado').length} pago(s)`, color: 'var(--green)' },
-          { label: 'Arrastre', value: arrastre.length, sub: 'pagos sin ejecutar', color: arrastre.length > 0 ? 'var(--yellow)' : 'var(--text)' },
-        ].map(s => (
-          <div key={s.label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '14px 18px' }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '.8px', marginBottom: 4 }}>{s.label}</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums' }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{s.sub}</div>
-          </div>
-        ))}
-      </div>
+    {/* Stats */}
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }}>
+  {[
+    { label: 'Pendiente', value: fARS(tpARS), sub: `${pagosSemana.filter(p => p.estado === 'Pendiente').length} pago(s)`, color: 'var(--yellow)' },
+    { label: 'Pagado', value: fARS(tpgARS), sub: `${pagosSemana.filter(p => p.estado === 'Pagado').length} pago(s)`, color: 'var(--green)' },
+    { label: 'Pend. anteriores', value: arrastre.length, sub: arrastre.length > 0 ? 'sin ejecutar' : 'Al dia', color: arrastre.length > 0 ? 'var(--red)' : 'var(--green)' },
+  ].map(s => (
+    <div key={s.label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '14px 18px' }}>
+      <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '.8px', marginBottom: 4 }}>{s.label}</div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: s.color, fontVariantNumeric: 'tabular-nums', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.value}</div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{s.sub}</div>
+    </div>
+  ))}
+</div>
 
       {/* Grafico */}
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '20px 20px 10px', marginBottom: 16 }}>
