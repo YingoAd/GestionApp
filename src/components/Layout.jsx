@@ -3,7 +3,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useStore } from '../store/useStore'
 import { getAlert, fARS, fDate, d2s, getLunes } from '../utils/helpers'
-import { exportarPagosExcel } from '../utils/exportExcel'
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: '◼' },
@@ -217,14 +216,7 @@ useEffect(() => {
             {location.pathname !== '/ingresos' && (
               <button onClick={() => handleNav('/pagos')}
                 style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 'var(--rs)', padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                <button
-  onClick={() => {
-    const semanaLabel = `S${new Date().toLocaleDateString('es-AR').replace(/\//g,'-')}`
-    exportarPagosExcel(data.pagos || [], semanaLabel)
-  }}
-  style={{ background: 'var(--teal-bg)', color: 'var(--teal)', border: '1px solid var(--teal-border)', borderRadius: 'var(--rs)', padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-  Exportar Excel
-</button>
+                
                 + Nuevo pago
               </button>
             )}
