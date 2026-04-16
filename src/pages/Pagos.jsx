@@ -251,12 +251,13 @@ export default function Pagos() {
   const openEdit = (p) => setModal({ ...p })
 
  const savePago = (fd) => {
+  const pagoFinal = fd.id ? fd : { ...fd, id: genId() }
   update(d => ({
     ...d,
     pagos: fd.id
-      ? d.pagos.map(p => p.id === fd.id ? fd : p)
-      : [{ ...fd, id: genId() }, ...d.pagos],
-    _pagoChanged: fd.id ? fd : { ...fd, id: genId() },
+      ? d.pagos.map(p => p.id === fd.id ? pagoFinal : p)
+      : [pagoFinal, ...d.pagos],
+    _pagoChanged: pagoFinal,
     _pagoDeleted: null,
     _proveedorChanged: null,
     _proveedorDeleted: null,
