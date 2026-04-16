@@ -196,8 +196,12 @@ useEffect(() => {
         </div>
 
         {/* Barchart */}
-        <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={chartData} onClick={handleBarClick} style={{ cursor: 'pointer' }}
+       <ResponsiveContainer width="100%" height={280} style={{ outline: 'none' }}>
+         <BarChart 
+  data={chartData}
+  onClick={!isMobile ? handleBarClick : undefined}
+  onTouchEnd={isMobile ? handleBarClick : undefined}
+  style={{ cursor: 'pointer', outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
