@@ -211,7 +211,7 @@ useEffect(() => {
               }}
             />
             <YAxis hide={isMobile} tick={{ fill: 'var(--text3)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={formatYAxis} width={isMobile ? 0 : 60} />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(79,124,255,.08)' }} />
+            <Tooltip content={isMobile ? <></> : <CustomTooltip />} cursor={{ fill: 'rgba(79,124,255,.08)' }} />
             {activeTipos.Efectivo && (
   <Bar dataKey="Efectivo" fill={TIPO_COLORS.Efectivo} radius={[4,4,0,0]}>
                 {chartData.map((entry, i) => (
