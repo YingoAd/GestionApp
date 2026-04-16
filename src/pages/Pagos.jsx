@@ -250,9 +250,9 @@ export default function Pagos() {
   const openNew = () => setModal(emptyPago(data.obras, data.rubros))
   const openEdit = (p) => setModal({ ...p })
 
- const savePago = (fd) => {
+ const savePago = async (fd) => {
   const pagoFinal = fd.id ? fd : { ...fd, id: genId() }
-  update(d => ({
+  await update(d => ({
     ...d,
     pagos: fd.id
       ? d.pagos.map(p => p.id === fd.id ? pagoFinal : p)
