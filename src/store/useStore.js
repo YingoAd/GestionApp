@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-
-const SK = 'gestpagos_v4'
+import { supabase } from '../supabase'
 
 const DEF_CONCEPTOS = ["MATERIALES","MANO DE OBRA","AGUA","VOLQUETE","BAÑO QUIMICO","LUZ","MOVIMIENTO","SSHHxDIA","MONOTRIBUTO","ALQUILER","CONTABLE","HERRAMIENTAS","EQUIPOS","PAGOS","CUOTA","CERTIFICACION","EPP","INDUMENTARIA","INSUMOS","OBRA SOCIAL","IMPUESTO","ANTECEDENTES","BIM","META","FCL","UOCRA","MANTENIMIENTO","AGRIMENSOR","AUTONOMOS","931","MATRICULA","IIBB","IMPRESIONES","PUBLICIDAD","SEGUROS","VIATICOS","COMBUSTIBLE","EXPENSAS","SINDICATO","PREOCUPACIONAL","INTERNET","D5","INTERES","ASIGNAR","TELEFONO","LEGALES","IERIC","COMIDA","CREDITO-DEBITO","INTERESES","COMISION","CHEQUE","INGENIERO","ALARMA","BOX","INSTALACIONES","DIRECCION","ADMINISTRACION","APR","FINNEGANS","GANANCIAS","ABOGADO","FOTOGRAFIA","HONORARIOS","HABERES","SUELDO","IVA","LIBRERIA","LOGISTICA","GESTORIA","SOCIO","SSHH","FINANCIERO","ESCRIBANIA"]
+
 const DEF_RUBROS = ["01-T.PRELIMINARES","02-MOV.SUELOS","03-FUNDACIONES","03E-FUNDACIONES(encofrado)","04-ESTRUCTURA Hº Aº","04E-ESTRUCTURA Hº Aº(encofrado)","05-ESTRUC.METALICA","06-MAMPOSTERIA","07-CONTRAPISO","08-CARPETA","09-REVOQUES","10-IMPERM. CUBIERTA","11-INSTA.CLOACAL","12-INSTA.PLUVIAL","13-INSTA.AGUA","14-INSTA.GAS","15-INSTA.ELECTRICA","16-INSTA.PISO RADIANTE","17-INSTA.AA","18-INSTA.ALARMA","19-CARPINTERIAS","20-HERRERIA","21-ZINGUERIA","22-PINTURA","23-CIELORRASOS","24-PISOS INT.","24-PISOS EXT.","24-ZOCALOS","25-REVEST.INT","26-REVEST.EXT","27-MARMOLERIA","28-PUERTAS.EXT","29-PUERTAS.INT","30-ARTEF.SANITARIOS","31-ARTEF.GAS","32-ARTEF.ILUMINACION","33-ARTEF.PISO RADIANTE","34-ARTEF.AA","35-ARTEF.ALARMA","36-MOBILIARIO","37-EQUIPAMIENTO","38-ELECTRODOMESTICOS","39-PILETA","40-PARQUIZACION","41-AYUDA GREMIO","42-LIMPIEZA OBRA","43-ESTRUC CUB Y CHAPA","44-INSTA.INCENDIOS","45-ASCENSORES","46-PUESTA EN MARCHA","47-INSTA.DATOS","48-ARTEF.INCENDIO","49-OBRA COMPLEMENTARIA","50-INFRAESTRUCTURA","Z.01-GASTOS FISICOS","Z.02-GASTOS DIRECTOS","Z.03-RRHH","Z.04-SSHH","Z.05-HONORARIOS","Z.06-HON.EXTERNOS","Z.07-HERRAMIENTAS y EQ","Z.08-LOGISTICA","Z.09-MARCA","Z.10-DESARROLLO","Z.11-COMERCIALIZACION","Z.12-TIERRA","Z.19-REDES","Z.20-IMPUESTOS","Z.21-BANCARIOS","ZZ.VENTA","ASIGNAR","MOVIMIENTO","FINANCIERO","ZZ.INGRESO"]
 
 function mkU(pre, id, cond, prop) {
@@ -11,7 +11,7 @@ function mkU(pre, id, cond, prop) {
 
 function buildObras() {
   const pellegrini = {
-    id: 'PELLEGRINI', nombre: 'Plejo Pellegrini', niveles: [
+    id: 'PELLEGRINI', nombre: 'Foresta Pellegrini', niveles: [
       { nombre: 'Planta baja', ufs: [
         mkU('PEL','Cochera 1'), mkU('PEL','Cochera 2','Vendida','Marta Brunori'), mkU('PEL','Cochera 3','Vendida','Marta Brunori'),
         mkU('PEL','Cochera 4'), mkU('PEL','Cochera 5'), mkU('PEL','Cochera 6','Reservada','DO'),
@@ -29,7 +29,7 @@ function buildObras() {
   }
 
   const alvear = {
-    id: 'ALVEAR', nombre: 'Plejo Alvear', niveles: [
+    id: 'ALVEAR', nombre: 'Foresta Alvear', niveles: [
       { nombre: 'Planta baja', ufs: [
         mkU('ALV','Cochera 1'), mkU('ALV','Cochera 2'), mkU('ALV','Cochera 3'),
         mkU('ALV','Cochera 4','Vendida','Lorenzi Gabriel'), mkU('ALV','Cochera 5','Pago de tierra','Pago de tierra'),
@@ -100,43 +100,112 @@ function buildObras() {
   return { PELLEGRINI: pellegrini, ALVEAR: alvear, TERRAL: terral }
 }
 
-function initData() {
-  return {
-    pagos: [],
-    obras: ['Sin obra asignada','TERRAL AL MAR','PELLEGRINI','ALVEAR','E-PASTOR','YINGO','Z09-MARCA'],
-    rubros: DEF_RUBROS,
-    conceptos: DEF_CONCEPTOS,
-    alertConfig: { diasAlertaDemora: 7, diasAlertaEcheq: 5 },
-    proveedores: [],
-    obrasUF: buildObras(),
-    ingresos: {},
-    planPago: {},
-  }
+const DEFAULT_CONFIG = {
+  obras: ['Sin obra asignada','TERRAL AL MAR','PELLEGRINI','ALVEAR','E-PASTOR','YINGO','Z09-MARCA'],
+  rubros: DEF_RUBROS,
+  conceptos: DEF_CONCEPTOS,
+  alertConfig: { diasAlertaDemora: 7, diasAlertaEcheq: 5 },
+  obrasUF: buildObras(),
 }
 
-function load() {
-  try {
-    const r = localStorage.getItem(SK)
-    if (r) {
-      const parsed = JSON.parse(r)
-      if (!parsed.obrasUF) parsed.obrasUF = buildObras()
-      if (!parsed.conceptos) parsed.conceptos = DEF_CONCEPTOS
-      return parsed
-    }
-  } catch(e) {}
-  return initData()
-}
-
-function save(data) {
-  try { localStorage.setItem(SK, JSON.stringify(data)) } catch(e) {}
-}
-
-let _data = load()
 let _listeners = []
+let _data = {
+  pagos: [],
+  proveedores: [],
+  ingresos: {},
+  ...DEFAULT_CONFIG,
+  loading: true,
+}
 
 function notify() {
   _listeners.forEach(fn => fn({ ..._data }))
 }
+
+async function loadFromSupabase() {
+  try {
+    // Cargar pagos
+    const { data: pagos } = await supabase.from('pagos').select('*').order('created_at', { ascending: false })
+    
+    // Cargar proveedores
+    const { data: proveedores } = await supabase.from('proveedores').select('*').order('created_at', { ascending: false })
+    
+    // Cargar ingresos
+    const { data: ingresosRaw } = await supabase.from('ingresos').select('*').order('created_at', { ascending: false })
+    
+    // Cargar config
+    const { data: configRaw } = await supabase.from('config').select('*').eq('id', 1).single()
+
+    // Convertir pagos al formato de la app
+    const pagosConvertidos = (pagos || []).map(p => ({
+      id: p.id,
+      fechaCarga: p.fecha_carga,
+      fechaPago: p.fecha_pago,
+      proveedor: p.proveedor,
+      obra: p.obra,
+      rubro: p.rubro,
+      concepto: p.concepto,
+      detalle: p.detalle,
+      recibo: p.recibo,
+      nroComprobante: p.nro_comprobante,
+      tipoPago: p.tipo_pago,
+      formaPago: p.forma_pago,
+      cuenta: p.cuenta,
+      gastoARS: p.gasto_ars,
+      gastoUSD: p.gasto_usd,
+      estado: p.estado,
+      obs: p.obs,
+    }))
+
+    // Convertir proveedores
+    const proveedoresConvertidos = (proveedores || []).map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      razonSocial: p.razon_social,
+      rubro: p.rubro,
+      desc: p.descripcion,
+    }))
+
+    // Convertir ingresos a objeto por uf_id
+    const ingresosObj = {}
+    ;(ingresosRaw || []).forEach(i => {
+      if (!ingresosObj[i.uf_id]) ingresosObj[i.uf_id] = []
+      ingresosObj[i.uf_id].push({
+        id: i.id,
+        ufId: i.uf_id,
+        fecha: i.fecha,
+        concepto: i.concepto,
+        detalle: i.detalle,
+        montoARS: i.monto_ars,
+        montoUSD: i.monto_usd,
+        formaPago: i.forma_pago,
+        cuenta: i.cuenta,
+        obs: i.obs,
+      })
+    })
+
+    // Config
+    const cfg = configRaw || {}
+
+    _data = {
+      pagos: pagosConvertidos,
+      proveedores: proveedoresConvertidos,
+      ingresos: ingresosObj,
+      obras: cfg.obras || DEFAULT_CONFIG.obras,
+      rubros: cfg.rubros || DEFAULT_CONFIG.rubros,
+      conceptos: cfg.conceptos || DEFAULT_CONFIG.conceptos,
+      alertConfig: cfg.alert_config || DEFAULT_CONFIG.alertConfig,
+      obrasUF: cfg.obras_uf || DEFAULT_CONFIG.obrasUF,
+      planPago: {},
+      loading: false,
+    }
+  } catch(e) {
+    console.error('Error cargando datos:', e)
+    _data = { ..._data, loading: false }
+  }
+  notify()
+}
+
+loadFromSupabase()
 
 export function useStore() {
   const [data, setData] = useState({ ..._data })
@@ -147,11 +216,94 @@ export function useStore() {
     return () => { _listeners = _listeners.filter(l => l !== fn) }
   }, [])
 
-  const update = (fn) => {
-    _data = fn({ ..._data })
-    save(_data)
+  const update = async (fn) => {
+    const newData = fn({ ..._data })
+    _data = newData
     notify()
+
+    // Detectar qué cambió y sincronizar con Supabase
+    await syncToSupabase(newData)
   }
 
   return { data, update }
+}
+
+async function syncToSupabase(data) {
+  try {
+    // Sync pagos
+    if (data._pagoChanged) {
+      const p = data._pagoChanged
+      await supabase.from('pagos').upsert({
+        id: p.id,
+        fecha_carga: p.fechaCarga,
+        fecha_pago: p.fechaPago || null,
+        proveedor: p.proveedor,
+        obra: p.obra,
+        rubro: p.rubro,
+        concepto: p.concepto,
+        detalle: p.detalle,
+        recibo: p.recibo,
+        nro_comprobante: p.nroComprobante,
+        tipo_pago: p.tipoPago,
+        forma_pago: p.formaPago,
+        cuenta: p.cuenta,
+        gasto_ars: p.gastoARS,
+        gasto_usd: p.gastoUSD,
+        estado: p.estado,
+        obs: p.obs,
+      })
+    }
+
+    if (data._pagoDeleted) {
+      await supabase.from('pagos').delete().eq('id', data._pagoDeleted)
+    }
+
+    if (data._proveedorChanged) {
+      const p = data._proveedorChanged
+      await supabase.from('proveedores').upsert({
+        id: p.id,
+        nombre: p.nombre,
+        razon_social: p.razonSocial,
+        rubro: p.rubro,
+        descripcion: p.desc,
+      })
+    }
+
+    if (data._proveedorDeleted) {
+      await supabase.from('proveedores').delete().eq('id', data._proveedorDeleted)
+    }
+
+    if (data._ingresoChanged) {
+      const i = data._ingresoChanged
+      await supabase.from('ingresos').upsert({
+        id: i.id,
+        uf_id: i.ufId,
+        fecha: i.fecha,
+        concepto: i.concepto,
+        detalle: i.detalle,
+        monto_ars: i.montoARS,
+        monto_usd: i.montoUSD,
+        forma_pago: i.formaPago,
+        cuenta: i.cuenta,
+        obs: i.obs,
+      })
+    }
+
+    if (data._ingresoDeleted) {
+      await supabase.from('ingresos').delete().eq('id', data._ingresoDeleted)
+    }
+
+    if (data._configChanged) {
+      await supabase.from('config').upsert({
+        id: 1,
+        obras: data.obras,
+        rubros: data.rubros,
+        conceptos: data.conceptos,
+        alert_config: data.alertConfig,
+        obras_uf: data.obrasUF,
+      })
+    }
+  } catch(e) {
+    console.error('Error sincronizando:', e)
+  }
 }

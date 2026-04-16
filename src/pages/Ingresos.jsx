@@ -256,29 +256,37 @@ export default function Ingresos() {
   const totalARS = allUFs.flatMap(u => data.ingresos[u.id] || []).reduce((s, i) => s + (i.montoARS || 0), 0)
 
   const saveIngreso = (ufId, v) => {
-    update(d => {
-      const cur = d.ingresos[ufId] || []
-      const updated = v.id ? cur.map(i => i.id === v.id ? v : i) : [{ ...v, id: genId() }, ...cur]
-      return { ...d, ingresos: { ...d.ingresos, [ufId]: updated } }
-    })
-  }
+  update(d => {
+    const cur = d.ingresos[ufId] || []
+    const ingreso = v.id ? v : { ...v, id: genId() }
+    const updated = v.id ? cur.map(i => i.id === v.id ? v : i) : [ingreso, ...cur]
+    return {
+      ...d,
+      ingresos: { ...d.ingresos, [ufId]: updated },
+      _ingresoChanged: ingreso,
+      _ingresoDeleted: null,
+      _pagoChanged: null,
+      _pagoDeleted: null,
+      _proveedorChanged: null,
+      _proveedorDeleted: null,
+      _configChanged: null,
+    }
+  })
+}
 
   const deleteIngreso = (ufId, id) => {
-    update(d => ({ ...d, ingresos: { ...d.ingresos, [ufId]: (d.ingresos[ufId] || []).filter(i => i.id !== id) } }))
-  }
-
-  const updateUF = (uf) => {
-    update(d => {
-      const o = { ...d.obrasUF }
-      const ob = o[obraId]
-      if (ob.torres) {
-        o[obraId] = { ...ob, torres: ob.torres.map(t => t.id === torre ? { ...t, niveles: t.niveles.map(n => ({ ...n, ufs: n.ufs.map(u => u.id === uf.id ? uf : u) })) } : t) }
-      } else {
-        o[obraId] = { ...ob, niveles: ob.niveles.map(n => ({ ...n, ufs: n.ufs.map(u => u.id === uf.id ? uf : u) })) }
-      }
-      return { ...d, obrasUF: o }
-    })
-  }
+  update(d => ({
+    ...d,
+    ingresos: { ...d.ingresos, [ufId]: (d.ingresos[ufId] || []).filter(i => i.id !== id) },
+    _ingresoDeleted: id,
+    _ingresoChanged: null,
+    _pagoChanged: null,
+    _pagoDeleted: null,
+    _proveedorChanged: null,
+    _proveedorDeleted: null,
+    _configChanged: null,
+  }))
+}
 
   return (
     <div>

@@ -6,31 +6,33 @@ export default function Configuracion() {
   const [tab, setTab] = useState('alertas')
   const [saved, setSaved] = useState(false)
 
-  // Alertas
   const [cfg, setCfg] = useState(data.alertConfig)
-
-  // Obras
   const [obrasTxt, setObrasTxt] = useState(data.obras.join('\n'))
-
-  // Rubros
   const [rubros, setRubros] = useState(data.rubros)
   const [newRubro, setNewRubro] = useState('')
-
-  // Conceptos
   const [conceptos, setConceptos] = useState(data.conceptos)
   const [newConcepto, setNewConcepto] = useState('')
+  const [cuentas, setCuentas] = useState(data.cuentas || ["Caja principal","Caja obra","Banco Nacion Cta.Cte.","Banco Galicia Cta.Cte.","Banco Santander Cta.Cte.","Banco BBVA Cta.Cte.","Banco Macro Cta.Cte.","Otra cuenta"])
+  const [newCuenta, setNewCuenta] = useState('')
 
   const save = () => {
-    update(d => ({
-      ...d,
-      alertConfig: cfg,
-      obras: obrasTxt.split('\n').map(o => o.trim()).filter(Boolean),
-      rubros,
-      conceptos,
-    }))
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
+  update(d => ({
+    ...d,
+    alertConfig: cfg,
+    obras: obrasTxt.split('\n').map(o => o.trim()).filter(Boolean),
+    rubros,
+    conceptos,
+    _configChanged: true,
+    _pagoChanged: null,
+    _pagoDeleted: null,
+    _proveedorChanged: null,
+    _proveedorDeleted: null,
+    _ingresoChanged: null,
+    _ingresoDeleted: null,
+  }))
+  setSaved(true)
+  setTimeout(() => setSaved(false), 2000)
+}
 
   const addRubro = () => {
     const r = newRubro.trim()
@@ -42,11 +44,17 @@ export default function Configuracion() {
     if (c && !conceptos.includes(c)) { setConceptos(l => [...l, c]); setNewConcepto('') }
   }
 
+  const addCuenta = () => {
+    const c = newCuenta.trim()
+    if (c && !cuentas.includes(c)) { setCuentas(l => [...l, c]); setNewCuenta('') }
+  }
+
   const tabs = [
     { id: 'alertas', label: 'Alertas' },
     { id: 'obras', label: 'Obras' },
     { id: 'rubros', label: 'Rubros' },
     { id: 'conceptos', label: 'Conceptos' },
+    { id: 'cuentas', label: 'Cuentas/Cajas' },
   ]
 
   const Label = ({ text }) => (
@@ -82,7 +90,6 @@ export default function Configuracion() {
     <div>
       <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Configuracion</div>
 
-      {/* Tabs */}
       <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid var(--border)', marginBottom: 18 }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
@@ -165,6 +172,23 @@ export default function Configuracion() {
               setNewVal={setNewConcepto}
               onAdd={addConcepto}
               placeholder="Nuevo concepto..."
+            />
+          </div>
+        )}
+
+        {tab === 'cuentas' && (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Cuentas / Cajas ({cuentas.length})</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 14 }}>
+              Aparecen como opciones al cargar un pago en el campo Caja/Cuenta.
+            </div>
+            <ListEditor
+              items={cuentas}
+              onRemove={i => setCuentas(l => l.filter((_, j) => j !== i))}
+              newVal={newCuenta}
+              setNewVal={setNewCuenta}
+              onAdd={addCuenta}
+              placeholder="Nueva cuenta o caja..."
             />
           </div>
         )}

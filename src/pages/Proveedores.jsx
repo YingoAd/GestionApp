@@ -57,19 +57,36 @@ export default function Proveedores() {
   }, [data.proveedores, q])
 
   const saveProv = (pv) => {
-    update(d => ({
-      ...d,
-      proveedores: pv.id
-        ? d.proveedores.map(p => p.id === pv.id ? pv : p)
-        : [{ ...pv, id: genId() }, ...d.proveedores]
-    }))
-    setModal(null)
-  }
+  update(d => ({
+    ...d,
+    proveedores: pv.id
+      ? d.proveedores.map(p => p.id === pv.id ? pv : p)
+      : [{ ...pv, id: genId() }, ...d.proveedores],
+    _proveedorChanged: pv.id ? pv : { ...pv, id: genId() },
+    _proveedorDeleted: null,
+    _pagoChanged: null,
+    _pagoDeleted: null,
+    _ingresoChanged: null,
+    _ingresoDeleted: null,
+    _configChanged: null,
+  }))
+  setModal(null)
+}
 
   const deleteProv = (id) => {
-    update(d => ({ ...d, proveedores: d.proveedores.filter(p => p.id !== id) }))
-    setConfirmDel(null)
-  }
+  update(d => ({
+    ...d,
+    proveedores: d.proveedores.filter(p => p.id !== id),
+    _proveedorDeleted: id,
+    _proveedorChanged: null,
+    _pagoChanged: null,
+    _pagoDeleted: null,
+    _ingresoChanged: null,
+    _ingresoDeleted: null,
+    _configChanged: null,
+  }))
+  setConfirmDel(null)
+}
 
   return (
     <div>

@@ -239,29 +239,54 @@ export default function Pagos() {
   const openNew = () => setModal(emptyPago(data.obras, data.rubros))
   const openEdit = (p) => setModal({ ...p })
 
-  const savePago = (fd) => {
-    update(d => ({
-      ...d,
-      pagos: fd.id
-        ? d.pagos.map(p => p.id === fd.id ? fd : p)
-        : [{ ...fd, id: genId() }, ...d.pagos]
-    }))
-    setModal(null)
-  }
+ const savePago = (fd) => {
+  update(d => ({
+    ...d,
+    pagos: fd.id
+      ? d.pagos.map(p => p.id === fd.id ? fd : p)
+      : [{ ...fd, id: genId() }, ...d.pagos],
+    _pagoChanged: fd.id ? fd : { ...fd, id: genId() },
+    _pagoDeleted: null,
+    _proveedorChanged: null,
+    _proveedorDeleted: null,
+    _ingresoChanged: null,
+    _ingresoDeleted: null,
+    _configChanged: null,
+  }))
+  setModal(null)
+}
 
   const deletePago = (id) => {
-    update(d => ({ ...d, pagos: d.pagos.filter(p => p.id !== id) }))
-  }
+  update(d => ({
+    ...d,
+    pagos: d.pagos.filter(p => p.id !== id),
+    _pagoDeleted: id,
+    _pagoChanged: null,
+    _proveedorChanged: null,
+    _proveedorDeleted: null,
+    _ingresoChanged: null,
+    _ingresoDeleted: null,
+    _configChanged: null,
+  }))
+}
 
   const toggleEstado = (id, nuevoEstado) => {
-    update(d => ({
+  update(d => {
+    const pago = d.pagos.find(p => p.id === id)
+    const updated = { ...pago, estado: nuevoEstado, fechaPago: nuevoEstado === 'Pagado' && !pago.fechaPago ? d2s(new Date()) : pago.fechaPago }
+    return {
       ...d,
-      pagos: d.pagos.map(p => p.id === id
-        ? { ...p, estado: nuevoEstado, fechaPago: nuevoEstado === 'Pagado' && !p.fechaPago ? d2s(new Date()) : p.fechaPago }
-        : p
-      )
-    }))
-  }
+      pagos: d.pagos.map(p => p.id === id ? updated : p),
+      _pagoChanged: updated,
+      _pagoDeleted: null,
+      _proveedorChanged: null,
+      _proveedorDeleted: null,
+      _ingresoChanged: null,
+      _ingresoDeleted: null,
+      _configChanged: null,
+    }
+  })
+}
 
   const any = Object.values(filt).some(v => v)
 
