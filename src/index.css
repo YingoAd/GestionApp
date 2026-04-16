@@ -26,3 +26,16 @@ textarea{resize:vertical;}
 ::-webkit-scrollbar-track{background:var(--bg2);}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 a{color:inherit;text-decoration:none;}
+@media (min-width: 769px) {
+  .sidebar-desktop { display: flex !important; }
+  .hamburger-btn { display: none !important; }
+  .mobile-menu { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  .sidebar-desktop { display: none !important; }
+  .hamburger-btn { display: flex !important; }
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
