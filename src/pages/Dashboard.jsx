@@ -10,7 +10,7 @@ const TIPO_COLORS = {
   Echeq: '#a78bfa',
 }
 
-const DIAS = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom']
+const DIAS = ['Lun','Mar','Mie','Jue','Vie']
 
 function formatYAxis(value) {
   if (value >= 1000000) return `$${(value/1000000).toFixed(1)}M`
@@ -49,9 +49,10 @@ export default function Dashboard() {
 
   // Pagos de la semana
   const pagosSemana = data.pagos.filter(p => {
-    const lp = d2s(getLunes(new Date(p.fechaCarga + 'T00:00:00')))
-    return lp === wId
-  })
+  const fechaRef = p.fechaPago || p.fechaCarga
+  const lp = d2s(getLunes(new Date(fechaRef + 'T00:00:00')))
+  return lp === wId
+})
 
   // Arrastre
   const arrastre = weekOffset >= 0
@@ -67,7 +68,7 @@ export default function Dashboard() {
   const chartData = useMemo(() => {
     return DIAS.map((dia, i) => {
       const fecha = d2s(addDays(lb, i))
-      const pagosDelDia = pagosSemana.filter(p => p.fechaCarga === fecha && p.estado !== 'Pagado')
+      const pagosDelDia = pagosSemana.filter(p => p.fechaPago === fecha)
       const efectivo = pagosDelDia.filter(p => p.tipoPago === 'Efectivo').reduce((s, p) => s + (p.gastoARS || 0), 0)
       const transferencia = pagosDelDia.filter(p => p.tipoPago === 'Transferencia').reduce((s, p) => s + (p.gastoARS || 0), 0)
       const echeq = pagosDelDia.filter(p => p.tipoPago && p.tipoPago.startsWith('Echeq')).reduce((s, p) => s + (p.gastoARS || 0), 0)
@@ -212,21 +213,21 @@ export default function Dashboard() {
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(79,124,255,.08)' }} />
             {activeTipos.Efectivo && (
-              <Bar dataKey="Efectivo" stackId="a" fill={TIPO_COLORS.Efectivo} radius={[0,0,0,0]}>
+  <Bar dataKey="Efectivo" fill={TIPO_COLORS.Efectivo} radius={[4,4,0,0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={selectedDay === entry.dia ? TIPO_COLORS.Efectivo : `${TIPO_COLORS.Efectivo}cc`} />
                 ))}
               </Bar>
             )}
             {activeTipos.Transferencia && (
-              <Bar dataKey="Transferencia" stackId="a" fill={TIPO_COLORS.Transferencia} radius={[0,0,0,0]}>
+  <Bar dataKey="Transferencia" fill={TIPO_COLORS.Transferencia} radius={[4,4,0,0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={selectedDay === entry.dia ? TIPO_COLORS.Transferencia : `${TIPO_COLORS.Transferencia}cc`} />
                 ))}
               </Bar>
             )}
-            {activeTipos.Echeq && (
-              <Bar dataKey="Echeq" stackId="a" fill={TIPO_COLORS.Echeq} radius={[4,4,0,0]}>
+           {activeTipos.Echeq && (
+  <Bar dataKey="Echeq" fill={TIPO_COLORS.Echeq} radius={[4,4,0,0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={selectedDay === entry.dia ? TIPO_COLORS.Echeq : `${TIPO_COLORS.Echeq}cc`} />
                 ))}
