@@ -32,7 +32,7 @@ function emptyPago(obras, rubros) {
   }
 }
 
-function PagoForm({ init, obras, rubros, conceptos, proveedores, onSave, onClose }) {
+function PagoForm({ init, obras, rubros, conceptos, cuentas, proveedores, onSave, onClose }) {  
   const [f, setF] = useState(init)
   const [errs, setErrs] = useState({})
   const [showProv, setShowProv] = useState(false)
