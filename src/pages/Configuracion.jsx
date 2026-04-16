@@ -30,6 +30,7 @@ const [newCuenta, setNewCuenta] = useState({ nombre: '', desc: '' })
     obras: obrasTxt.split('\n').map(o => o.trim()).filter(Boolean),
     rubros,
     conceptos,
+    cuentas,
     _configChanged: true,
     _pagoChanged: null,
     _pagoDeleted: null,
