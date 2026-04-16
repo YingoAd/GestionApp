@@ -251,6 +251,14 @@ useEffect(() => {
           </div>
           <nav style={{ padding: '10px 6px', flex: 1 }}>
             {navItems.map(item => {
+              const navItems = [
+  { path: '/', label: 'Dashboard', icon: '◼' },
+  { path: '/pagos', label: 'Pagos', icon: '💳' },
+  { path: '/ingresos', label: 'Ingresos', icon: '💰' },
+  { path: '/proveedores', label: 'Proveedores', icon: '🏢' },
+  { path: '/informes', label: 'Informes', icon: '📊' },
+  { path: '/configuracion', label: 'Configuracion', icon: '⚙️' },
+]
               const active = location.pathname === item.path
               return (
                 <button key={item.path} onClick={() => handleNav(item.path)}

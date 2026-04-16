@@ -8,6 +8,7 @@ import Proveedores from './pages/Proveedores'
 import Configuracion from './pages/Configuracion'
 import Login from './pages/Login'
 import { useAuth } from './hooks/useAuth'
+import Informes from './pages/Informes'
 
 function App() {
   const { user, loading } = useAuth()
@@ -30,6 +31,7 @@ function App() {
         <Route path="proveedores" element={<Proveedores />} />
         <Route path="configuracion" element={<Configuracion />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="informes" element={<Informes />} />
       </Route>
     </Routes>
   )
