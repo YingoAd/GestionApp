@@ -191,7 +191,8 @@ export default function Informes() {
             borderRadius: 'var(--rs)', padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: 8
           }}>
-          Descargar Excel
+          Ver Informe
+          
         </button>
         {totalUSD > 0 && (
           <div style={{ fontSize: 12, color: 'var(--text3)' }}>

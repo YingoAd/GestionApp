@@ -284,9 +284,7 @@ function showTab(idx) {
   // Descargar como HTML
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
   const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'GestPagos-' + semanaLabel + '.html'
-  a.click()
-  URL.revokeObjectURL(url)
+  const nuevaVentana = window.open('', '_blank')
+nuevaVentana.document.write(html)
+nuevaVentana.document.close()
 }
