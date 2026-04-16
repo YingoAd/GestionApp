@@ -295,13 +295,14 @@ async function syncToSupabase(data) {
 
     if (data._configChanged) {
       await supabase.from('config').upsert({
-        id: 1,
-        obras: data.obras,
-        rubros: data.rubros,
-        conceptos: data.conceptos,
-        alert_config: data.alertConfig,
-        obras_uf: data.obrasUF,
-      })
+  id: 1,
+  obras: data.obras,
+  rubros: data.rubros,
+  conceptos: data.conceptos,
+  alert_config: data.alertConfig,
+  obras_uf: data.obrasUF,
+  cuentas: data.cuentas,
+})
     }
   } catch(e) {
     console.error('Error sincronizando:', e)
