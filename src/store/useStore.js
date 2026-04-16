@@ -187,17 +187,29 @@ async function loadFromSupabase() {
     const cfg = configRaw || {}
 
     _data = {
-      pagos: pagosConvertidos,
-      proveedores: proveedoresConvertidos,
-      ingresos: ingresosObj,
-      obras: cfg.obras || DEFAULT_CONFIG.obras,
-      rubros: cfg.rubros || DEFAULT_CONFIG.rubros,
-      conceptos: cfg.conceptos || DEFAULT_CONFIG.conceptos,
-      alertConfig: cfg.alert_config || DEFAULT_CONFIG.alertConfig,
-      obrasUF: cfg.obras_uf || DEFAULT_CONFIG.obrasUF,
-      planPago: {},
-      loading: false,
-    }
+  pagos: pagosConvertidos,
+  proveedores: proveedoresConvertidos,
+  ingresos: ingresosObj,
+  obras: cfg.obras || DEFAULT_CONFIG.obras,
+  rubros: cfg.rubros || DEFAULT_CONFIG.rubros,
+  conceptos: cfg.conceptos || DEFAULT_CONFIG.conceptos,
+  alertConfig: cfg.alert_config || DEFAULT_CONFIG.alertConfig,
+  obrasUF: cfg.obras_uf || DEFAULT_CONFIG.obrasUF,
+  cuentas: cfg.cuentas || [
+    { nombre: "BCOOP-024049/5", desc: "" },
+    { nombre: "BCOOP-013170/4", desc: "" },
+    { nombre: "BCOOP-023030/2", desc: "" },
+    { nombre: "BCOOP-023519/2", desc: "" },
+    { nombre: "BGAL-0376/9", desc: "" },
+    { nombre: "BNACION-427310", desc: "" },
+    { nombre: "BNACION-26157", desc: "" },
+    { nombre: "BPROV-91613/2", desc: "" },
+    { nombre: "CAJA JERE", desc: "" },
+    { nombre: "MARTIN.P-USD", desc: "" },
+  ],
+  planPago: {},
+  loading: false,
+}
   } catch(e) {
     console.error('Error cargando datos:', e)
     _data = { ..._data, loading: false }
