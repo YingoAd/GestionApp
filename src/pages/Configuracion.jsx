@@ -52,10 +52,13 @@ const [newCuenta, setNewCuenta] = useState({ nombre: '', desc: '' })
     if (c && !conceptos.includes(c)) { setConceptos(l => [...l, c]); setNewConcepto('') }
   }
 
-  const addCuenta = () => {
-    const c = newCuenta.trim()
-    if (c && !cuentas.includes(c)) { setCuentas(l => [...l, c]); setNewCuenta('') }
+ const addCuenta = () => {
+  const nombre = newCuenta.nombre.trim()
+  if (nombre && !cuentas.find(c => c.nombre === nombre)) {
+    setCuentas(l => [...l, { nombre, desc: newCuenta.desc.trim() }])
+    setNewCuenta({ nombre: '', desc: '' })
   }
+}
 
   const tabs = [
     { id: 'alertas', label: 'Alertas' },
@@ -228,6 +231,8 @@ const [newCuenta, setNewCuenta] = useState({ nombre: '', desc: '' })
     </div>
   </div>
 )}
+
+      </div>
 
       <div style={{ marginTop: 18 }}>
         <button onClick={save}
