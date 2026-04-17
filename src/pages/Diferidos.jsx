@@ -117,19 +117,19 @@ export default function Diferidos() {
     setSelectedPeriod(prev => prev === d.activeLabel ? null : d.activeLabel)
   }
 
-  const marcarDebitado = (id) => {
-    update(d => {
-      const pago = d.pagos.find(p => p.id === id)
-      const updated = { ...pago, estado: 'Debitado' }
-      return {
-        ...d,
-        pagos: d.pagos.map(p => p.id === id ? updated : p),
-        _pagoChanged: updated,
-        _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
-        _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
-      }
-    })
-  }
+  const marcarDebitado = (id, nuevoEstado) => {
+  update(d => {
+    const pago = d.pagos.find(p => p.id === id)
+    const updated = { ...pago, estado: nuevoEstado }
+    return {
+      ...d,
+      pagos: d.pagos.map(p => p.id === id ? updated : p),
+      _pagoChanged: updated,
+      _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+      _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
+    }
+  })
+}
 
   const nombreMes = primerDiaMes.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
 
@@ -310,12 +310,20 @@ function TablaDiferidos({ pagos, onDebitado }) {
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.gastoARS ? fARS(p.gastoARS) : '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', color: 'var(--green)' }}>{p.gastoUSD ? fUSD(p.gastoUSD) : '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
-                  {p.estado === 'Emitido' && (
-                    <button onClick={() => onDebitado(p.id)}
-                      style={{ background: 'var(--green-bg)', border: '1px solid var(--green-border)', color: 'var(--green)', borderRadius: 'var(--rs)', padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                      Marcar debitado
-                    </button>
-                  )}
+                 <div style={{ display: 'flex', gap: 4 }}>
+  {p.estado === 'Emitido' && (
+    <button onClick={() => onDebitado(p.id, 'Debitado')}
+      style={{ background: 'var(--green-bg)', border: '1px solid var(--green-border)', color: 'var(--green)', borderRadius: 'var(--rs)', padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+      Marcar debitado
+    </button>
+  )}
+  {p.estado === 'Debitado' && (
+    <button onClick={() => onDebitado(p.id, 'Emitido')}
+      style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-border)', color: 'var(--yellow)', borderRadius: 'var(--rs)', padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+      Revertir
+    </button>
+  )}
+</div>
                 </td>
               </tr>
             )
