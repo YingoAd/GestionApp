@@ -18,21 +18,50 @@ function TipoBadge({ tipo }) {
 
 function EstadoBtn({ pago, onToggle, cfg }) {
   const al = getAlert(pago, cfg)
-  const configs = {
-    Pagado: { bg: 'var(--green-bg)', color: 'var(--green)', border: '1px solid var(--green-border)', label: 'Pagado' },
-    red: { bg: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-border)', label: pago.estado === 'Vencido' ? 'Vencido' : 'Atrasado' },
-    yellow: { bg: 'var(--yellow-bg)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)', label: 'Proximo' },
-    green: { bg: 'var(--bg3)', color: 'var(--text2)', border: '1px solid var(--border2)', label: 'Pendiente' },
+  const esDiferido = pago.tipoPago === 'CHQ' || (pago.tipoPago && pago.tipoPago.startsWith('Echeq'))
+
+  if (pago.estado === 'Pagado' || pago.estado === 'Emitido') {
+    const label = esDiferido ? 'Emitido' : 'Pagado'
+    return (
+      <button
+        onClick={() => onToggle(pago.id, 'Pendiente')}
+        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--green-border)', background: 'var(--green-bg)', color: 'var(--green)', whiteSpace: 'nowrap' }}>
+        {label}
+      </button>
+    )
   }
-  const key = pago.estado === 'Pagado' ? 'Pagado' : al
-  const s = configs[key] || configs.green
-  const nextEstado = pago.estado === 'Pagado' ? 'Pendiente' : 'Pagado'
+  if (pago.estado === 'Debitado') {
+    return (
+      <button
+        onClick={() => onToggle(pago.id, 'Pendiente')}
+        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--blue-border)', background: 'var(--blue-bg)', color: 'var(--blue)', whiteSpace: 'nowrap' }}>
+        Debitado
+      </button>
+    )
+  }
+  if (pago.estado === 'Vencido' || al === 'red') {
+    return (
+      <button
+        onClick={() => onToggle(pago.id, esDiferido ? 'Emitido' : 'Pagado')}
+        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--red-border)', background: 'var(--red-bg)', color: 'var(--red)', whiteSpace: 'nowrap' }}>
+        {al === 'red' && pago.estado !== 'Vencido' ? 'Atrasado' : 'Vencido'}
+      </button>
+    )
+  }
+  if (al === 'yellow') {
+    return (
+      <button
+        onClick={() => onToggle(pago.id, esDiferido ? 'Emitido' : 'Pagado')}
+        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--yellow-border)', background: 'var(--yellow-bg)', color: 'var(--yellow)', whiteSpace: 'nowrap' }}>
+        Proximo
+      </button>
+    )
+  }
   return (
     <button
-      onClick={() => onToggle(pago.id, nextEstado)}
-      style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: s.border, background: s.bg, color: s.color, whiteSpace: 'nowrap' }}
-    >
-      {s.label}
+      onClick={() => onToggle(pago.id, esDiferido ? 'Emitido' : 'Pagado')}
+      style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--border2)', background: 'var(--bg3)', color: 'var(--text2)', whiteSpace: 'nowrap' }}>
+      Pendiente
     </button>
   )
 }

@@ -282,22 +282,47 @@ export default function Pagos() {
   }))
 }
 
-  const toggleEstado = (id, nuevoEstado) => {
+  const [nroChequeModal, setNroChequeModal] = useState(null)
+const [nroChequeInput, setNroChequeInput] = useState('')
+
+const toggleEstado = (id, nuevoEstado) => {
+  const pago = data.pagos.find(p => p.id === id)
+  const esDiferido = pago.tipoPago === 'CHQ' || (pago.tipoPago && pago.tipoPago.startsWith('Echeq'))
+  
+  if (esDiferido && nuevoEstado === 'Emitido') {
+    setNroChequeInput(pago.nroComprobante || '')
+    setNroChequeModal(id)
+    return
+  }
+
   update(d => {
-    const pago = d.pagos.find(p => p.id === id)
-    const updated = { ...pago, estado: nuevoEstado, fechaPago: nuevoEstado === 'Pagado' && !pago.fechaPago ? d2s(new Date()) : pago.fechaPago }
+    const p = d.pagos.find(p => p.id === id)
+    const updated = { ...p, estado: nuevoEstado }
     return {
       ...d,
       pagos: d.pagos.map(p => p.id === id ? updated : p),
       _pagoChanged: updated,
-      _pagoDeleted: null,
-      _proveedorChanged: null,
-      _proveedorDeleted: null,
-      _ingresoChanged: null,
-      _ingresoDeleted: null,
-      _configChanged: null,
+      _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+      _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
     }
   })
+}
+
+const confirmarEmision = () => {
+  const id = nroChequeModal
+  update(d => {
+    const p = d.pagos.find(p => p.id === id)
+    const updated = { ...p, estado: 'Emitido', nroComprobante: nroChequeInput || p.nroComprobante }
+    return {
+      ...d,
+      pagos: d.pagos.map(p => p.id === id ? updated : p),
+      _pagoChanged: updated,
+      _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+      _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
+    }
+  })
+  setNroChequeModal(null)
+  setNroChequeInput('')
 }
 
   const any = Object.values(filt).some(v => v)
@@ -354,6 +379,40 @@ export default function Pagos() {
     onSave={savePago}
     onClose={() => setModal(null)}
   />
+)}
+{nroChequeModal && (
+  <div onClick={e => { if(e.target===e.currentTarget) setNroChequeModal(null) }}
+    style={{ position:'fixed',inset:0,background:'rgba(0,0,0,.75)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100 }}>
+    <div style={{ background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:12,width:'100%',maxWidth:400,boxShadow:'var(--shadow)',padding:24 }}>
+      <div style={{ fontSize:15,fontWeight:700,marginBottom:16 }}>Confirmar emision</div>
+      <div style={{ fontSize:12,color:'var(--text2)',marginBottom:12 }}>
+        Ingresa el numero de cheque / echeq para confirmar la emision.
+      </div>
+      <div style={{ display:'flex',flexDirection:'column',gap:4,marginBottom:20 }}>
+        <label style={{ fontSize:10,color:'var(--text2)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.5px' }}>
+          Nro. Cheque / eCheq
+        </label>
+        <input
+          value={nroChequeInput}
+          onChange={e => setNroChequeInput(e.target.value)}
+          placeholder="Ej: 00012345 o ECH-123456"
+          style={{ width:'100%' }}
+          autoFocus
+          onKeyDown={e => e.key === 'Enter' && confirmarEmision()}
+        />
+      </div>
+      <div style={{ display:'flex',justifyContent:'flex-end',gap:8 }}>
+        <button onClick={() => setNroChequeModal(null)}
+          style={{ background:'transparent',border:'1px solid var(--border)',color:'var(--text2)',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Cancelar
+        </button>
+        <button onClick={confirmarEmision}
+          style={{ background:'var(--accent)',color:'#fff',border:'none',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Confirmar emision
+        </button>
+      </div>
+    </div>
+  </div>
 )}
     </div>
   )
