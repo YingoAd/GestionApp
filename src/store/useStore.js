@@ -104,7 +104,7 @@ const DEFAULT_CONFIG = {
   obras: ['Sin obra asignada','TERRAL AL MAR','PELLEGRINI','ALVEAR','E-PASTOR','YINGO','Z09-MARCA'],
   rubros: DEF_RUBROS,
   conceptos: DEF_CONCEPTOS,
-  alertConfig: { diasAlertaDemora: 7, diasAlertaEcheq: 5 },
+  alertConfig: { diasAlertaDemora: 7, diasAlertaEcheq: 5, diasAlertaCheque: 20, diasSinNumerar: 5 },
   obrasUF: buildObras(),
 }
 
@@ -227,7 +227,12 @@ async function loadFromSupabase() {
   obras: cfg.obras || DEFAULT_CONFIG.obras,
   rubros: cfg.rubros || DEFAULT_CONFIG.rubros,
   conceptos: cfg.conceptos || DEFAULT_CONFIG.conceptos,
-  alertConfig: cfg.alert_config || DEFAULT_CONFIG.alertConfig,
+  alertConfig: cfg.alert_config ? {
+  diasAlertaDemora: cfg.alert_config.diasAlertaDemora || 7,
+  diasAlertaEcheq: cfg.alert_config.diasAlertaEcheq || 5,
+  diasAlertaCheque: cfg.alert_config.diasAlertaCheque || 20,
+  diasSinNumerar: cfg.alert_config.diasSinNumerar || 5,
+} : DEFAULT_CONFIG.alertConfig,
   obrasUF: cfg.obras_uf || DEFAULT_CONFIG.obrasUF,
   cuentas: cfg.cuentas || [
     { nombre: "BCOOP-024049/5", desc: "" },

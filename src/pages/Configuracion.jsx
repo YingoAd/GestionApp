@@ -119,29 +119,42 @@ const [newCuenta, setNewCuenta] = useState({ nombre: '', desc: '' })
 
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: 20, maxWidth: 560 }}>
         {tab === 'alertas' && (
-          <div style={{ display: 'grid', gap: 14 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Parametros de alertas</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <Label text="Dias de demora para alerta amarilla" />
-              <input type="number" min="1" max="60" value={cfg.diasAlertaDemora}
-                onChange={ev => setCfg(c => ({ ...c, diasAlertaDemora: parseInt(ev.target.value) || 7 }))}
-                style={{ width: '100%' }} />
-              <span style={{ fontSize: 11, color: 'var(--text3)' }}>El doble de dias = alerta roja</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <Label text="Dias previos al vencimiento para alerta Echeq" />
-              <input type="number" min="1" max="30" value={cfg.diasAlertaEcheq}
-                onChange={ev => setCfg(c => ({ ...c, diasAlertaEcheq: parseInt(ev.target.value) || 5 }))}
-                style={{ width: '100%' }} />
-            </div>
-            <div style={{ background: 'var(--bg3)', borderRadius: 'var(--rs)', padding: 12, fontSize: 12 }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>Resumen</div>
-              <div style={{ color: 'var(--green)', marginBottom: 4 }}>Verde — menos de {cfg.diasAlertaDemora} dias sin ejecutar</div>
-              <div style={{ color: 'var(--yellow)', marginBottom: 4 }}>Amarillo — {cfg.diasAlertaDemora}+ dias, o Echeq a {cfg.diasAlertaEcheq} dias</div>
-              <div style={{ color: 'var(--red)' }}>Rojo — {cfg.diasAlertaDemora * 2}+ dias, o Echeq vencido</div>
-            </div>
-          </div>
-        )}
+  <div style={{ display: 'grid', gap: 14 }}>
+    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Alertas generales (EFT / TRF / TRJ)</div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Label text="Dias de demora para alerta amarilla" />
+      <input type="number" min="1" max="60" value={cfg.diasAlertaDemora}
+        onChange={e => setCfg(c => ({ ...c, diasAlertaDemora: parseInt(e.target.value) || 7 }))}
+        style={{ width: '100%' }} />
+      <span style={{ fontSize: 11, color: 'var(--text3)' }}>El doble = alerta roja</span>
+    </div>
+
+    <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
+
+    <div style={{ fontSize: 13, fontWeight: 700 }}>Alertas de Cheques / eCheqs</div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Label text="Dias post vencimiento para mostrar en alertas" />
+      <input type="number" min="1" max="60" value={cfg.diasAlertaCheque || 20}
+        onChange={e => setCfg(c => ({ ...c, diasAlertaCheque: parseInt(e.target.value) || 20 }))}
+        style={{ width: '100%' }} />
+      <span style={{ fontSize: 11, color: 'var(--text3)' }}>Aparece en alertas si la fecha R paso hace mas de X dias sin ser debitado</span>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Label text="Dias sin numerar para alerta" />
+      <input type="number" min="1" max="30" value={cfg.diasSinNumerar || 5}
+        onChange={e => setCfg(c => ({ ...c, diasSinNumerar: parseInt(e.target.value) || 5 }))}
+        style={{ width: '100%' }} />
+      <span style={{ fontSize: 11, color: 'var(--text3)' }}>Cheque/Echeq cargado sin numero de comprobante despues de X dias</span>
+    </div>
+
+    <div style={{ background: 'var(--bg3)', borderRadius: 'var(--rs)', padding: 12, fontSize: 12 }}>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>Resumen alertas generales</div>
+      <div style={{ color: 'var(--green)', marginBottom: 4 }}>Verde — menos de {cfg.diasAlertaDemora} dias sin ejecutar</div>
+      <div style={{ color: 'var(--yellow)', marginBottom: 4 }}>Amarillo — {cfg.diasAlertaDemora}+ dias</div>
+      <div style={{ color: 'var(--red)' }}>Rojo — {cfg.diasAlertaDemora * 2}+ dias</div>
+    </div>
+  </div>
+)}
 
         {tab === 'obras' && (
           <div style={{ display: 'grid', gap: 12 }}>
