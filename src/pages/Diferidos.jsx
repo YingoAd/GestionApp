@@ -41,7 +41,7 @@ export default function Diferidos() {
   const [weekOffset, setWeekOffset] = useState(0)
   const [monthOffset, setMonthOffset] = useState(0)
   const [selectedPeriod, setSelectedPeriod] = useState(null)
-  const [filt, setFilt] = useState({ obra: '', proveedor: '', estado: '' })
+  const [filt, setFilt] = useState({ obra: '', proveedor: '', estado: '', nroCheque: '', orden: 'asc' })
   const fSet = (k, v) => setFilt(p => ({ ...p, [k]: v }))
 
   // Solo CHQ y Echeq con estado Emitido o Debitado
@@ -52,12 +52,21 @@ export default function Diferidos() {
   }), [data.pagos])
 
   // Filtros
-  const filtrados = useMemo(() => diferidos.filter(p => {
+  const filtrados = useMemo(() => {
+  let result = diferidos.filter(p => {
     if (filt.obra && p.obra !== filt.obra) return false
     if (filt.proveedor && !p.proveedor.toLowerCase().includes(filt.proveedor.toLowerCase())) return false
     if (filt.estado && p.estado !== filt.estado) return false
+    if (filt.nroCheque && !(p.nroComprobante || '').toLowerCase().includes(filt.nroCheque.toLowerCase())) return false
     return true
-  }), [diferidos, filt])
+  })
+  result.sort((a, b) => {
+    const fa = a.fechaPago || a.fechaCarga || ''
+    const fb = b.fechaPago || b.fechaCarga || ''
+    return filt.orden === 'asc' ? fa.localeCompare(fb) : fb.localeCompare(fa)
+  })
+  return result
+}, [diferidos, filt])
 
   // Stats
   const totalEmitido = filtrados.filter(p => p.estado === 'Emitido').reduce((s, p) => s + (p.gastoARS || 0), 0)
@@ -249,7 +258,29 @@ export default function Diferidos() {
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: 18, marginBottom: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 14 }}>Todos los diferidos ({filtrados.length})</div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
-          <input placeholder="Buscar proveedor..." value={filt.proveedor} onChange={e => fSet('proveedor', e.target.value)} style={{ minWidth: 200 }} />
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' }}>
+  <input placeholder="Buscar proveedor..." value={filt.proveedor} onChange={e => fSet('proveedor', e.target.value)} style={{ minWidth: 180 }} />
+  <input placeholder="Nro. cheque / echeq..." value={filt.nroCheque} onChange={e => fSet('nroCheque', e.target.value)} style={{ minWidth: 180, fontFamily: 'var(--mono)' }} />
+  <select value={filt.obra} onChange={e => fSet('obra', e.target.value)} style={{ minWidth: 140 }}>
+    <option value="">Todas las obras</option>
+    {data.obras.map(o => <option key={o}>{o}</option>)}
+  </select>
+  <select value={filt.estado} onChange={e => fSet('estado', e.target.value)} style={{ minWidth: 130 }}>
+    <option value="">Todos los estados</option>
+    <option>Emitido</option>
+    <option>Debitado</option>
+  </select>
+  <select value={filt.orden} onChange={e => fSet('orden', e.target.value)} style={{ minWidth: 160 }}>
+    <option value="asc">Fecha: mas antiguo primero</option>
+    <option value="desc">Fecha: mas reciente primero</option>
+  </select>
+  {Object.values(filt).some(v => v && v !== 'asc') && (
+    <button onClick={() => setFilt({ obra: '', proveedor: '', estado: '', nroCheque: '', orden: 'asc' })}
+      style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text3)', borderRadius: 'var(--rs)', padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>
+      X Limpiar
+    </button>
+  )}
+</div>
           <select value={filt.obra} onChange={e => fSet('obra', e.target.value)} style={{ minWidth: 140 }}>
             <option value="">Todas las obras</option>
             {data.obras.map(o => <option key={o}>{o}</option>)}
