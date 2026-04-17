@@ -343,8 +343,9 @@ const any = filt.q || filt.obra || filt.rubro || filt.estado || filt.tipos.lengt
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' }}>
         <input placeholder="Buscar proveedor, concepto, cbante..." value={filt.q} onChange={ev => fSet('q', ev.target.value)} style={{ minWidth: 220 }} />
         <select value={filt.obra} onChange={ev => fSet('obra', ev.target.value)} style={{ minWidth: 130 }}>
-          <option value="">Todas las obras</option>
-          {data.obras.map(o => <option key={o}>{o}</option>)}
+  <option value="">Todas las obras</option>
+  {data.obras.map(o => <option key={o}>{o}</option>)}
+</select>
         <div style={{ position: 'relative' }}>
   <button
     onClick={() => setTiposOpen(v => !v)}
