@@ -9,6 +9,7 @@ import Configuracion from './pages/Configuracion'
 import Login from './pages/Login'
 import { useAuth } from './hooks/useAuth'
 import Informes from './pages/Informes'
+import Diferidos from './pages/Diferidos'
 
 function App() {
   const { user, loading } = useAuth()
@@ -32,6 +33,7 @@ function App() {
         <Route path="configuracion" element={<Configuracion />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="informes" element={<Informes />} />
+        <Route path="diferidos" element={<Diferidos />} />
       </Route>
     </Routes>
   )

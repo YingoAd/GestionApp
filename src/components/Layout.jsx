@@ -11,6 +11,7 @@ const navItems = [
   { path: '/proveedores', label: 'Proveedores', icon: '🏢' },
   { path: '/configuracion', label: 'Configuracion', icon: '⚙️' },
   { path: '/informes', label: 'Informes', icon: '📊' },
+  { path: '/diferidos', label: 'Diferidos', icon: '🔵' },
 ]
 
 function AlertasPanel({ pagos, alertConfig, onClose, onToggle }) {
