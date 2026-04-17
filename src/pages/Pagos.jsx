@@ -5,7 +5,7 @@ import { getLunes, d2s, fDate, genId, getAlert } from '../utils/helpers'
 import TablaExcel from '../components/TablaExcel'
 
 const TIPOS = ["Efectivo", "Transferencia", "Echeq"]
-const ECHEQ_VARS = ["Echeq","Echeq-n1","Echeq-n2","Echeq-n3","Echeq-n4","Echeq-n5","Echeq-n6","Echeq-n7","Echeq-n8","Echeq-n9","Echeq-n10"]
+const ECHEQ_VARS = ["Echeq","Echeq-n1","Echeq-n2","Echeq-n3","Echeq-n4","Echeq-n5","Echeq-n6","Echeq-n7","Echeq-n8","Echeq-n9","Echeq-n10","Echeq-n11","Echeq-n12","Echeq-n13","Echeq-n14","Echeq-n15","Echeq-n16","Echeq-n17","Echeq-n18","Echeq-n19","Echeq-n20"]
 const FORMAS = ["Efectivo en mano","Cheque propio","Cheque tercero","Transferencia bancaria","Echeq emitido","Echeq recibido","Tarjeta"]
 const CUENTAS = ["BCOOP-024049/5","BCOOP-013170/4","BCOOP-023030/2","BCOOP-023519/2","BGAL-0376/9","BNACION-427310","BNACION-26157","BPROV-91613/2","CAJA JERE","MARTIN.P-USD"]
 const ESTADOS = ["Pendiente","Pagado","Vencido"]
@@ -232,13 +232,14 @@ export default function Pagos() {
   const { data, update } = useStore()
   const location = useLocation()
   const [modal, setModal] = useState(null)
-  const [filt, setFilt] = useState({ obra: '', rubro: '', tipo: '', estado: '', q: '' })
+  const [filt, setFilt] = useState({ obra: '', rubro: '', tipos: [], estado: '', q: '' })
+const [tiposOpen, setTiposOpen] = useState(false)
   const fSet = (k, v) => setFilt(p => ({ ...p, [k]: v }))
 
   const filtered = useMemo(() => data.pagos.filter(p => {
     if (filt.obra && p.obra !== filt.obra) return false
     if (filt.rubro && p.rubro !== filt.rubro) return false
-    if (filt.tipo && !p.tipoPago.startsWith(filt.tipo)) return false
+    if (filt.tipos.length > 0 && !filt.tipos.some(t => t === 'Echeq' ? p.tipoPago?.startsWith('Echeq') : p.tipoPago === t)) return false
     if (filt.estado && p.estado !== filt.estado) return false
     if (filt.q) {
       const q = filt.q.toLowerCase()
@@ -325,7 +326,7 @@ const confirmarEmision = () => {
   setNroChequeInput('')
 }
 
-  const any = Object.values(filt).some(v => v)
+const any = filt.q || filt.obra || filt.rubro || filt.estado || filt.tipos.length > 0
 
   return (
     <div>
@@ -344,11 +345,46 @@ const confirmarEmision = () => {
         <select value={filt.obra} onChange={ev => fSet('obra', ev.target.value)} style={{ minWidth: 130 }}>
           <option value="">Todas las obras</option>
           {data.obras.map(o => <option key={o}>{o}</option>)}
-        </select>
-        <select value={filt.tipo} onChange={ev => fSet('tipo', ev.target.value)} style={{ minWidth: 120 }}>
-          <option value="">Todos los tipos</option>
-          {TIPOS.map(t => <option key={t}>{t}</option>)}
-        </select>
+        <div style={{ position: 'relative' }}>
+  <button
+    onClick={() => setTiposOpen(v => !v)}
+    style={{ background: 'var(--bg3)', border: '1px solid var(--border)', color: filt.tipos.length > 0 ? 'var(--accent)' : 'var(--text2)', borderRadius: 'var(--rs)', padding: '6px 12px', fontSize: 12, cursor: 'pointer', minWidth: 140, textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+    {filt.tipos.length === 0 ? 'Tipo de pago' : filt.tipos.join(', ')}
+    <span style={{ fontSize: 10 }}>▼</span>
+  </button>
+  {tiposOpen && (
+    <>
+      <div onClick={() => setTiposOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 49 }} />
+      <div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 50, background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', boxShadow: 'var(--shadow)', padding: '8px 0', minWidth: 180, marginTop: 4 }}>
+        {['Efectivo','Transferencia','Echeq','CHQ'].map(t => (
+          <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 14px', cursor: 'pointer', fontSize: 12 }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg3)'}
+            onMouseLeave={e => e.currentTarget.style.background = ''}>
+            <input
+              type="checkbox"
+              checked={filt.tipos.includes(t)}
+              onChange={() => {
+                const cur = filt.tipos
+                const next = cur.includes(t) ? cur.filter(x => x !== t) : [...cur, t]
+                setFilt(p => ({ ...p, tipos: next }))
+              }}
+              style={{ width: 14, height: 14, accentColor: 'var(--accent)' }}
+            />
+            {t}
+          </label>
+        ))}
+        {filt.tipos.length > 0 && (
+          <div style={{ borderTop: '1px solid var(--border)', padding: '6px 14px', marginTop: 4 }}>
+            <button onClick={() => { setFilt(p => ({ ...p, tipos: [] })); setTiposOpen(false) }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text3)', fontSize: 11, cursor: 'pointer' }}>
+              Limpiar selección
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  )}
+</div>
         <select value={filt.estado} onChange={ev => fSet('estado', ev.target.value)} style={{ minWidth: 120 }}>
           <option value="">Todos los estados</option>
           {ESTADOS.map(s => <option key={s}>{s}</option>)}
@@ -358,7 +394,7 @@ const confirmarEmision = () => {
           {data.rubros.map(r => <option key={r}>{r}</option>)}
         </select>
         {any && (
-          <button onClick={() => setFilt({ obra: '', rubro: '', tipo: '', estado: '', q: '' })} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text3)', borderRadius: 'var(--rs)', padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>
+          <button onClick={() => setFilt({ obra: '', rubro: '', tipos: [], estado: '', q: '' })} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text3)', borderRadius: 'var(--rs)', padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>
             X Limpiar
           </button>
         )}
