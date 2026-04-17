@@ -259,18 +259,18 @@ export default function Diferidos() {
         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 14 }}>Todos los diferidos ({filtrados.length})</div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' }}>
-  <input placeholder="Buscar proveedor..." value={filt.proveedor} onChange={e => fSet('proveedor', e.target.value)} style={{ minWidth: 180 }} />
-  <input placeholder="Nro. cheque / echeq..." value={filt.nroCheque} onChange={e => fSet('nroCheque', e.target.value)} style={{ minWidth: 180, fontFamily: 'var(--mono)' }} />
-  <select value={filt.obra} onChange={e => fSet('obra', e.target.value)} style={{ minWidth: 140 }}>
+  <input placeholder="Buscar proveedor..." value={filt.proveedor} onChange={e => fSet('proveedor', e.target.value)} style={{ minWidth: 180 }} />style={{ minWidth: 160, maxWidth: 180, height: 34, fontSize: 12 }}
+  <input placeholder="Nro. cheque / echeq..." value={filt.nroCheque} onChange={e => fSet('nroCheque', e.target.value)} style={{ minWidth: 180, fontFamily: 'var(--mono)' }} />style={{ minWidth: 160, maxWidth: 180, height: 34, fontSize: 12 }}
+  <select value={filt.obra} onChange={e => fSet('obra', e.target.value)} style={{ minWidth: 140 }}>style={{ minWidth: 160, maxWidth: 180, height: 34, fontSize: 12 }}
     <option value="">Todas las obras</option>
     {data.obras.map(o => <option key={o}>{o}</option>)}
   </select>
-  <select value={filt.estado} onChange={e => fSet('estado', e.target.value)} style={{ minWidth: 130 }}>
+  <select value={filt.estado} onChange={e => fSet('estado', e.target.value)} style={{ minWidth: 130 }}>style={{ minWidth: 160, maxWidth: 180, height: 34, fontSize: 12 }}
     <option value="">Todos los estados</option>
     <option>Emitido</option>
     <option>Debitado</option>
   </select>
-  <select value={filt.orden} onChange={e => fSet('orden', e.target.value)} style={{ minWidth: 160 }}>
+  <select value={filt.orden} onChange={e => fSet('orden', e.target.value)} style={{ minWidth: 160 }}>style={{ minWidth: 160, maxWidth: 180, height: 34, fontSize: 12 }}
     <option value="asc">Fecha: mas antiguo primero</option>
     <option value="desc">Fecha: mas reciente primero</option>
   </select>
@@ -281,21 +281,7 @@ export default function Diferidos() {
     </button>
   )}
 </div>
-          <select value={filt.obra} onChange={e => fSet('obra', e.target.value)} style={{ minWidth: 140 }}>
-            <option value="">Todas las obras</option>
-            {data.obras.map(o => <option key={o}>{o}</option>)}
-          </select>
-          <select value={filt.estado} onChange={e => fSet('estado', e.target.value)} style={{ minWidth: 130 }}>
-            <option value="">Todos los estados</option>
-            <option>Emitido</option>
-            <option>Debitado</option>
-          </select>
-          {Object.values(filt).some(v => v) && (
-            <button onClick={() => setFilt({ obra: '', proveedor: '', estado: '' })}
-              style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text3)', borderRadius: 'var(--rs)', padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>
-              X Limpiar
-            </button>
-          )}
+
         </div>
         <TablaDiferidos pagos={filtrados} onDebitado={marcarDebitado} />
       </div>
