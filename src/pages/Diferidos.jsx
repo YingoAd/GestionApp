@@ -284,7 +284,6 @@ export default function Diferidos() {
         </div>
         <TablaDiferidos pagos={filtrados} onDebitado={marcarDebitado} />
       </div>
-    </div>
   )
 }
 
