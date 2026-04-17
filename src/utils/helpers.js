@@ -40,13 +40,14 @@ export const diasDesde = s => {
 }
 
 export const getAlert = (p, cfg) => {
-  if (p.estado === 'Pagado') return 'ok'
+  if (p.estado === 'Pagado' || p.estado === 'Emitido' || p.estado === 'Debitado') return 'ok'
+  
+  const esDiferido = p.tipoPago === 'CHQ' || (p.tipoPago && p.tipoPago.startsWith('Echeq'))
+  
+  // Diferidos no entran en alertas generales
+  if (esDiferido) return 'ok'
+  
   const dd = diasDesde(p.fechaCarga)
-  if (p.tipoPago && p.tipoPago.startsWith('Echeq') && p.fechaPago) {
-    const dv = Math.floor((s2d(p.fechaPago) - new Date()) / 86400000)
-    if (dv < 0) return 'red'
-    if (dv <= cfg.diasAlertaEcheq) return 'yellow'
-  }
   if (dd >= cfg.diasAlertaDemora * 2) return 'red'
   if (dd >= cfg.diasAlertaDemora) return 'yellow'
   return 'green'
