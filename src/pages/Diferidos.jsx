@@ -69,8 +69,7 @@ export default function Diferidos() {
   })
   return result
 }, [diferidos, filt])
-const [debitadoModal, setDebitadoModal] = useState(null)
-const [debitadoFecha, setDebitadoFecha] = useState('')
+
   // Stats
   const totalEmitido = filtrados.filter(p => p.estado === 'Emitido').reduce((s, p) => s + (p.gastoARS || 0), 0)
   const totalDebitado = filtrados.filter(p => p.estado === 'Debitado').reduce((s, p) => s + (p.gastoARS || 0), 0)
