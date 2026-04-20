@@ -67,18 +67,25 @@ export default function Dashboard() {
   const tpARS = [...pagosSemana, ...arrastre].filter(p => p.estado === 'Pendiente' && p.gastoARS).reduce((s, p) => s + p.gastoARS, 0)
   const tpgARS = pagosSemana.filter(p => p.estado === 'Pagado' && p.gastoARS).reduce((s, p) => s + p.gastoARS, 0)
 
-  const chartData = useMemo(() => {
+ const chartData = useMemo(() => {
     const hoy = d2s(new Date())
+    const lb2 = addDays(getLunes(), weekOffset * 7)
+    const wId2 = d2s(lb2)
+    
+    const pagosSem = data.pagos.filter(p => {
+      const fechaRef = p.fechaPago || p.fechaCarga
+      if (!fechaRef) return false
+      const lp = d2s(getLunes(new Date(fechaRef + 'T00:00:00')))
+      return lp === wId2
+    })
+
     return DIAS.map((dia, i) => {
-      const fecha = d2s(addDays(lb, i))
-      const pagosDelDia = pagosSemana.filter(p => {
-        // Pagos pagados — usar su fecha de pago normal
+      const fecha = d2s(addDays(lb2, i))
+      const pagosDelDia = pagosSem.filter(p => {
         if (p.estado === 'Pagado') return p.fechaPago === fecha
-        // Pagos pendientes con fecha pasada — mostrar en HOY
         const esDiferido = p.tipoPago === 'CHQ' || (p.tipoPago && p.tipoPago.startsWith('Echeq'))
-        if (esDiferido) return false // diferidos no van en dashboard general
+        if (esDiferido) return false
         if (p.estado === 'Pendiente' && p.fechaPago && p.fechaPago < hoy) return fecha === hoy
-        // Pagos pendientes con fecha futura — mostrar en su fecha
         return p.fechaPago === fecha
       })
       const efectivo = pagosDelDia.filter(p => p.tipoPago === 'Efectivo').reduce((s, p) => s + (p.gastoARS || 0), 0)
