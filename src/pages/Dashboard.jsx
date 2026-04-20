@@ -68,9 +68,19 @@ export default function Dashboard() {
   const tpgARS = pagosSemana.filter(p => p.estado === 'Pagado' && p.gastoARS).reduce((s, p) => s + p.gastoARS, 0)
 
   const chartData = useMemo(() => {
+    const hoy = d2s(new Date())
     return DIAS.map((dia, i) => {
       const fecha = d2s(addDays(lb, i))
-      const pagosDelDia = pagosSemana.filter(p => p.fechaPago === fecha)
+      const pagosDelDia = pagosSemana.filter(p => {
+        // Pagos pagados — usar su fecha de pago normal
+        if (p.estado === 'Pagado') return p.fechaPago === fecha
+        // Pagos pendientes con fecha pasada — mostrar en HOY
+        const esDiferido = p.tipoPago === 'CHQ' || (p.tipoPago && p.tipoPago.startsWith('Echeq'))
+        if (esDiferido) return false // diferidos no van en dashboard general
+        if (p.estado === 'Pendiente' && p.fechaPago && p.fechaPago < hoy) return fecha === hoy
+        // Pagos pendientes con fecha futura — mostrar en su fecha
+        return p.fechaPago === fecha
+      })
       const efectivo = pagosDelDia.filter(p => p.tipoPago === 'Efectivo').reduce((s, p) => s + (p.gastoARS || 0), 0)
       const transferencia = pagosDelDia.filter(p => p.tipoPago === 'Transferencia').reduce((s, p) => s + (p.gastoARS || 0), 0)
       const echeq = pagosDelDia.filter(p => p.tipoPago && p.tipoPago.startsWith('Echeq')).reduce((s, p) => s + (p.gastoARS || 0), 0)

@@ -235,6 +235,8 @@ export default function Pagos() {
   const [filt, setFilt] = useState({ obra: '', rubro: '', tipos: [], estado: '', q: '' })
 const [tiposOpen, setTiposOpen] = useState(false)
   const fSet = (k, v) => setFilt(p => ({ ...p, [k]: v }))
+  const [pagadoModal, setPagadoModal] = useState(null)
+const [pagadoFechaInput, setPagadoFechaInput] = useState('')
 
   const filtered = useMemo(() => data.pagos.filter(p => {
     if (filt.obra && p.obra !== filt.obra) return false
@@ -296,6 +298,12 @@ const toggleEstado = (id, nuevoEstado) => {
     return
   }
 
+  if (!esDiferido && nuevoEstado === 'Pagado') {
+    setPagadoFechaInput(new Date().toISOString().split('T')[0])
+    setPagadoModal(id)
+    return
+  }
+
   update(d => {
     const p = d.pagos.find(p => p.id === id)
     const updated = { ...p, estado: nuevoEstado }
@@ -324,6 +332,23 @@ const confirmarEmision = () => {
   })
   setNroChequeModal(null)
   setNroChequeInput('')
+}
+
+const confirmarPagado = () => {
+  const id = pagadoModal
+  update(d => {
+    const p = d.pagos.find(p => p.id === id)
+    const updated = { ...p, estado: 'Pagado', fechaPago: pagadoFechaInput || p.fechaPago }
+    return {
+      ...d,
+      pagos: d.pagos.map(p => p.id === id ? updated : p),
+      _pagoChanged: updated,
+      _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+      _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
+    }
+  })
+  setPagadoModal(null)
+  setPagadoFechaInput('')
 }
 
 const any = filt.q || filt.obra || filt.rubro || filt.estado || filt.tipos.length > 0
@@ -446,6 +471,39 @@ const any = filt.q || filt.obra || filt.rubro || filt.estado || filt.tipos.lengt
         <button onClick={confirmarEmision}
           style={{ background:'var(--accent)',color:'#fff',border:'none',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
           Confirmar emision
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{pagadoModal && (
+  <div onClick={e => { if(e.target===e.currentTarget) setPagadoModal(null) }}
+    style={{ position:'fixed',inset:0,background:'rgba(0,0,0,.75)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100 }}>
+    <div style={{ background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:12,width:'100%',maxWidth:400,boxShadow:'var(--shadow)',padding:24 }}>
+      <div style={{ fontSize:15,fontWeight:700,marginBottom:16 }}>Confirmar pago</div>
+      <div style={{ fontSize:12,color:'var(--text2)',marginBottom:12 }}>
+        Selecciona la fecha real en que se realizó el pago.
+      </div>
+      <div style={{ display:'flex',flexDirection:'column',gap:4,marginBottom:20 }}>
+        <label style={{ fontSize:10,color:'var(--text2)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.5px' }}>
+          Fecha de pago
+        </label>
+        <input
+          type="date"
+          value={pagadoFechaInput}
+          onChange={e => setPagadoFechaInput(e.target.value)}
+          style={{ width:'100%' }}
+          autoFocus
+        />
+      </div>
+      <div style={{ display:'flex',justifyContent:'flex-end',gap:8 }}>
+        <button onClick={() => setPagadoModal(null)}
+          style={{ background:'transparent',border:'1px solid var(--border)',color:'var(--text2)',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Cancelar
+        </button>
+        <button onClick={confirmarPagado}
+          style={{ background:'var(--accent)',color:'#fff',border:'none',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Confirmar pago
         </button>
       </div>
     </div>
