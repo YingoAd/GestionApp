@@ -73,6 +73,8 @@ export default function Diferidos() {
   const totalDebitado = filtrados.filter(p => p.estado === 'Debitado').reduce((s, p) => s + (p.gastoARS || 0), 0)
   const countEmitido = filtrados.filter(p => p.estado === 'Emitido').length
   const countDebitado = filtrados.filter(p => p.estado === 'Debitado').length
+  const [debitadoModal, setDebitadoModal] = useState(null)
+  const [debitadoFecha, setDebitadoFecha] = useState('')
 
   // --- GRAFICO SEMANAL ---
   const lb = addDays(getLunes(), weekOffset * 7)
@@ -127,6 +129,11 @@ export default function Diferidos() {
   }
 
   const marcarDebitado = (id, nuevoEstado) => {
+  if (nuevoEstado === 'Debitado') {
+    setDebitadoFecha(new Date().toISOString().split('T')[0])
+    setDebitadoModal(id)
+    return
+  }
   update(d => {
     const pago = d.pagos.find(p => p.id === id)
     const updated = { ...pago, estado: nuevoEstado }
@@ -138,6 +145,23 @@ export default function Diferidos() {
       _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
     }
   })
+}
+
+const confirmarDebitado = () => {
+  const id = debitadoModal
+  update(d => {
+    const pago = d.pagos.find(p => p.id === id)
+    const updated = { ...pago, estado: 'Debitado', fechaPago: debitadoFecha || pago.fechaPago }
+    return {
+      ...d,
+      pagos: d.pagos.map(p => p.id === id ? updated : p),
+      _pagoChanged: updated,
+      _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+      _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
+    }
+  })
+  setDebitadoModal(null)
+  setDebitadoFecha('')
 }
 
   const nombreMes = primerDiaMes.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
