@@ -353,14 +353,14 @@ function TablaDiferidos({ pagos, onDebitado }) {
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
         <thead>
           <tr style={{ background: '#0d1520' }}>
-            {['Tipo','Estado','Nro. Cheque','Proveedor','Obra','Concepto','Fecha carga','Fecha R / Vcto','VCTO Real','Monto ARS','Accion'].map(h => (
+              {['Tipo','Estado','Nro. Cheque','Proveedor','Obra','Concepto','Fecha carga','VCTO Original','VCTO Real','Monto ARS','Accion'].map(h => (
               <th key={h} style={{ padding: '8px 10px', fontSize: 10, color: '#a0b0cc', textTransform: 'uppercase', letterSpacing: '.7px', fontWeight: 800, borderBottom: '2px solid var(--border2)', textAlign: h.includes('Monto') ? 'right' : 'left', whiteSpace: 'nowrap' }}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {pagos.map(p => {
-            const arrastre = p.fechaPago && p.fechaPago < d2s(new Date()) && p.estado === 'Emitido'
+            const arrastre = p.estado === 'Emitido' && p.fechaVctoOriginal && p.fechaPago !== p.fechaVctoOriginal
             return (
               <tr key={p.id} onMouseEnter={e => e.currentTarget.style.background = 'rgba(79,124,255,.06)'} onMouseLeave={e => e.currentTarget.style.background = ''}>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
@@ -378,7 +378,12 @@ function TablaDiferidos({ pagos, onDebitado }) {
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, color: '#7dd3fc' }}>{p.obra}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11 }}>{p.concepto}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{fDate(p.fechaCarga)}</td>
-                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: arrastre ? '#fb923c' : 'var(--text)', fontWeight: arrastre ? 700 : 400 }}>{fDate(p.fechaPago)}</td>                
+                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: arrastre ? '#fb923c' : 'var(--text2)' }}>
+                {fDate(p.fechaVctoOriginal || p.fechaPago)}
+              </td>
+                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: arrastre ? '#fb923c' : 'var(--text)', fontWeight: arrastre ? 700 : 400 }}>
+                {arrastre ? fDate(p.fechaPago) : '--'}
+              </td>                
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.gastoARS ? fARS(p.gastoARS) : '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: 'var(--text2)' }}>{p.obs || '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>

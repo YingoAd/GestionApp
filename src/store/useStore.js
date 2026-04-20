@@ -135,15 +135,19 @@ _data.pagos = _data.pagos.map(p => {
   if (!esDiferido || p.estado !== 'Emitido' || !p.fechaPago) return p
   const fechaVcto = new Date(p.fechaPago + 'T00:00:00')
   if (fechaVcto >= hoy) return p
-  // Fecha vencida — mover al proximo dia habil
   const nuevaFecha = nextHabil(p.fechaPago)
-  pagosCorregidos.push({ ...p, fechaPago: nuevaFecha })
-  return { ...p, fechaPago: nuevaFecha }
+  // Guardar fecha original si no existe
+  const fechaOriginal = p.fechaVctoOriginal || p.fechaPago
+  pagosCorregidos.push({ ...p, fechaPago: nuevaFecha, fechaVctoOriginal: fechaOriginal })
+  return { ...p, fechaPago: nuevaFecha, fechaVctoOriginal: fechaOriginal }
 })
 
 if (pagosCorregidos.length > 0) {
   pagosCorregidos.forEach(p => {
-    supabase.from('pagos').update({ fecha_pago: p.fechaPago }).eq('id', p.id)
+    supabase.from('pagos').update({ 
+      fecha_pago: p.fechaPago,
+      fecha_vcto_original: p.fechaVctoOriginal
+    }).eq('id', p.id)
   })
 }
 
@@ -304,6 +308,7 @@ async function syncToSupabase(data) {
         gasto_usd: p.gastoUSD,
         estado: p.estado,
         obs: p.obs,
+        fecha_vcto_original: p.fechaVctoOriginal || null,
       })
     }
 
