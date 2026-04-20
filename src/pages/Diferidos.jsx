@@ -360,7 +360,7 @@ function TablaDiferidos({ pagos, onDebitado }) {
         </thead>
         <tbody>
           {pagos.map(p => {
-            const vencido = p.fechaPago && p.fechaPago < d2s(new Date()) && p.estado === 'Emitido'
+            const arrastre = p.fechaPago && p.fechaPago < d2s(new Date()) && p.estado === 'Emitido'
             return (
               <tr key={p.id} onMouseEnter={e => e.currentTarget.style.background = 'rgba(79,124,255,.06)'} onMouseLeave={e => e.currentTarget.style.background = ''}>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
@@ -369,16 +369,16 @@ function TablaDiferidos({ pagos, onDebitado }) {
                   </span>
                 </td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: p.estado === 'Debitado' ? 'var(--green-bg)' : vencido ? 'var(--red-bg)' : 'var(--yellow-bg)', color: p.estado === 'Debitado' ? 'var(--green)' : vencido ? 'var(--red)' : 'var(--yellow)', border: '1px solid', borderColor: p.estado === 'Debitado' ? 'var(--green-border)' : vencido ? 'var(--red-border)' : 'var(--yellow-border)' }}>
-                    {vencido && p.estado === 'Emitido' ? 'VENCIDO' : p.estado}
-                  </span>
-                </td>
+                <span style={{ display: 'inline-flex', padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: p.estado === 'Debitado' ? 'var(--green-bg)' : arrastre ? 'rgba(251,146,60,.15)' : 'var(--yellow-bg)', color: p.estado === 'Debitado' ? 'var(--green)' : arrastre ? '#fb923c' : 'var(--yellow)', border: '1px solid', borderColor: p.estado === 'Debitado' ? 'var(--green-border)' : arrastre ? '#fb923c' : 'var(--yellow-border)' }}>
+                 {arrastre ? 'ARRASTRE' : p.estado}
+                </span>
+              </td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text2)' }}>{p.nroComprobante || '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontWeight: 600, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.proveedor}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, color: '#7dd3fc' }}>{p.obra}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11 }}>{p.concepto}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{fDate(p.fechaCarga)}</td>
-                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: vencido ? 'var(--red)' : 'var(--text)', fontWeight: vencido ? 700 : 400 }}>{fDate(p.fechaPago)}</td>
+                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: arrastre ? '#fb923c' : 'var(--text)', fontWeight: arrastre ? 700 : 400 }}>{fDate(p.fechaPago)}</td>                
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.gastoARS ? fARS(p.gastoARS) : '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', color: 'var(--green)' }}>{p.gastoUSD ? fUSD(p.gastoUSD) : '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>

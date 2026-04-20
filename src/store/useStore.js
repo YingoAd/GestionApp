@@ -119,18 +119,15 @@ let _data = {
 // Corrimiento automatico de fechas diferidos
 const hoy = new Date()
 hoy.setHours(0,0,0,0)
-const diasHabiles = (fecha) => {
-  const d = new Date(fecha + 'T00:00:00')
-  const dia = d.getDay()
-  if (dia === 6) { d.setDate(d.getDate() + 2); return d } // sabado -> lunes
-  if (dia === 0) { d.setDate(d.getDate() + 1); return d } // domingo -> lunes
+
+const nextHabil = (fechaStr) => {
+  const d = new Date(fechaStr + 'T00:00:00')
   d.setDate(d.getDate() + 1)
-  const nuevo = d.getDay()
-  if (nuevo === 6) d.setDate(d.getDate() + 2) // si cae sabado -> lunes
-  if (nuevo === 0) d.setDate(d.getDate() + 1) // si cae domingo -> lunes
-  return d
+  const dia = d.getDay()
+  if (dia === 6) d.setDate(d.getDate() + 2) // sabado -> lunes
+  if (dia === 0) d.setDate(d.getDate() + 1) // domingo -> lunes
+  return d.toISOString().split('T')[0]
 }
-const d2sLocal = d => d.toISOString().split('T')[0]
 
 const pagosCorregidos = []
 _data.pagos = _data.pagos.map(p => {
@@ -138,12 +135,17 @@ _data.pagos = _data.pagos.map(p => {
   if (!esDiferido || p.estado !== 'Emitido' || !p.fechaPago) return p
   const fechaVcto = new Date(p.fechaPago + 'T00:00:00')
   if (fechaVcto >= hoy) return p
-  // Fecha vencida y no debitado - mover al proximo dia habil
-  const nuevaFecha = d2sLocal(diasHabiles(p.fechaPago))
-  if (nuevaFecha === p.fechaPago) return p
+  // Fecha vencida — mover al proximo dia habil
+  const nuevaFecha = nextHabil(p.fechaPago)
   pagosCorregidos.push({ ...p, fechaPago: nuevaFecha })
   return { ...p, fechaPago: nuevaFecha }
 })
+
+if (pagosCorregidos.length > 0) {
+  pagosCorregidos.forEach(p => {
+    supabase.from('pagos').update({ fecha_pago: p.fechaPago }).eq('id', p.id)
+  })
+}
 
 // Sincronizar corrimientos a Supabase en background
 if (pagosCorregidos.length > 0) {
