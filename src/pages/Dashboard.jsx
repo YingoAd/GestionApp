@@ -153,6 +153,7 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {console.log('pagosSemana:', pagosSemana.length, 'chartData:', chartData)}
       {/* Grafico */}
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '20px 20px 10px', marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
