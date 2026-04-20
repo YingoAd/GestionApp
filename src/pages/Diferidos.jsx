@@ -369,6 +369,38 @@ function TablaDiferidos({ pagos, onDebitado }) {
           })}
         </tbody>
       </table>
+      {debitadoModal && (
+  <div onClick={e => { if(e.target===e.currentTarget) setDebitadoModal(null) }}
+    style={{ position:'fixed',inset:0,background:'rgba(0,0,0,.75)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100 }}>
+    <div style={{ background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:12,width:'100%',maxWidth:400,padding:24 }}>
+      <div style={{ fontSize:15,fontWeight:700,marginBottom:16 }}>Confirmar debito</div>
+      <div style={{ fontSize:12,color:'var(--text2)',marginBottom:12 }}>
+        Selecciona la fecha real en que fue debitado el cheque.
+      </div>
+      <div style={{ display:'flex',flexDirection:'column',gap:4,marginBottom:20 }}>
+        <label style={{ fontSize:10,color:'var(--text2)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.5px' }}>
+          Fecha de debito
+        </label>
+        <input
+          type="date"
+          value={debitadoFecha}
+          onChange={e => setDebitadoFecha(e.target.value)}
+          style={{ width:'100%' }}
+        />
+      </div>
+      <div style={{ display:'flex',justifyContent:'flex-end',gap:8 }}>
+        <button onClick={() => setDebitadoModal(null)}
+          style={{ background:'transparent',border:'1px solid var(--border)',color:'var(--text2)',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Cancelar
+        </button>
+        <button onClick={confirmarDebitado}
+          style={{ background:'var(--green)',color:'#fff',border:'none',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Confirmar debito
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   )
 }
