@@ -43,6 +43,8 @@ export default function Diferidos() {
   const [selectedPeriod, setSelectedPeriod] = useState(null)
   const [filt, setFilt] = useState({ obra: '', proveedor: '', estado: '', nroCheque: '', orden: 'asc' })
   const fSet = (k, v) => setFilt(p => ({ ...p, [k]: v }))
+  const [debitadoModal, setDebitadoModal] = useState(null)
+  const [debitadoFecha, setDebitadoFecha] = useState('')
 
   // Solo CHQ y Echeq con estado Emitido o Debitado
   const diferidos = useMemo(() => data.pagos.filter(p => {
@@ -67,14 +69,14 @@ export default function Diferidos() {
   })
   return result
 }, [diferidos, filt])
-
+const [debitadoModal, setDebitadoModal] = useState(null)
+const [debitadoFecha, setDebitadoFecha] = useState('')
   // Stats
   const totalEmitido = filtrados.filter(p => p.estado === 'Emitido').reduce((s, p) => s + (p.gastoARS || 0), 0)
   const totalDebitado = filtrados.filter(p => p.estado === 'Debitado').reduce((s, p) => s + (p.gastoARS || 0), 0)
   const countEmitido = filtrados.filter(p => p.estado === 'Emitido').length
   const countDebitado = filtrados.filter(p => p.estado === 'Debitado').length
-  const [debitadoModal, setDebitadoModal] = useState(null)
-  const [debitadoFecha, setDebitadoFecha] = useState('')
+
 
   // --- GRAFICO SEMANAL ---
   const lb = addDays(getLunes(), weekOffset * 7)
