@@ -353,7 +353,7 @@ function TablaDiferidos({ pagos, onDebitado }) {
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
         <thead>
           <tr style={{ background: '#0d1520' }}>
-            {['Tipo','Estado','Nro. Cheque','Proveedor','Obra','Concepto','Fecha carga','Fecha R / Vcto','Monto ARS','Monto USD','Accion'].map(h => (
+            {['Tipo','Estado','Nro. Cheque','Proveedor','Obra','Concepto','Fecha carga','Fecha R / Vcto','VCTO Real','Monto ARS','Accion'].map(h => (
               <th key={h} style={{ padding: '8px 10px', fontSize: 10, color: '#a0b0cc', textTransform: 'uppercase', letterSpacing: '.7px', fontWeight: 800, borderBottom: '2px solid var(--border2)', textAlign: h.includes('Monto') ? 'right' : 'left', whiteSpace: 'nowrap' }}>{h}</th>
             ))}
           </tr>
@@ -380,7 +380,7 @@ function TablaDiferidos({ pagos, onDebitado }) {
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{fDate(p.fechaCarga)}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: arrastre ? '#fb923c' : 'var(--text)', fontWeight: arrastre ? 700 : 400 }}>{fDate(p.fechaPago)}</td>                
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{p.gastoARS ? fARS(p.gastoARS) : '--'}</td>
-                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', color: 'var(--green)' }}>{p.gastoUSD ? fUSD(p.gastoUSD) : '--'}</td>
+                <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', fontSize: 11, whiteSpace: 'nowrap', color: 'var(--text2)' }}>{p.obs || '--'}</td>
                 <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)' }}>
                  <div style={{ display: 'flex', gap: 4 }}>
   {p.estado === 'Emitido' && (
