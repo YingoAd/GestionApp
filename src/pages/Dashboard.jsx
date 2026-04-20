@@ -86,7 +86,7 @@ export default function Dashboard() {
       const echeq = pagosDelDia.filter(p => p.tipoPago && p.tipoPago.startsWith('Echeq')).reduce((s, p) => s + (p.gastoARS || 0), 0)
       return { dia, fecha, Efectivo: efectivo, Transferencia: transferencia, Echeq: echeq, total: efectivo + transferencia + echeq, pagos: pagosDelDia }
     })
-  }, [pagosSemana, lb])
+  }, [data.pagos, weekOffset])
 
   const pagosDelDiaSeleccionado = selectedDay ? chartData.find(d => d.dia === selectedDay)?.pagos || [] : []
 
