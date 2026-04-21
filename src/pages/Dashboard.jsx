@@ -54,12 +54,13 @@ export default function Dashboard() {
   const dom = addDays(lb, 6)
   const esHoy = weekOffset === 0
 
-  const pagosSemana = data.pagos.filter(p => {
+  const pagosSemana = useMemo(() => data.pagos.filter(p => {
     const fechaRef = p.fechaPago || p.fechaCarga
+    if (!fechaRef) return false
     const lp = d2s(getLunes(new Date(fechaRef + 'T00:00:00')))
     return lp === wId
-  })
-
+  }), [data.pagos, wId])
+  
   const arrastre = weekOffset >= 0
     ? data.pagos.filter(p => d2s(getLunes(new Date(p.fechaCarga + 'T00:00:00'))) < wId && p.estado === 'Pendiente')
     : []
@@ -69,22 +70,10 @@ export default function Dashboard() {
 
  const chartData = useMemo(() => {
     const hoy = d2s(new Date())
-    const lb2 = addDays(getLunes(), weekOffset * 7)
-    const wId2 = d2s(lb2)
-    
-    const pagosSem = data.pagos.filter(p => {
-      const fechaRef = p.fechaPago || p.fechaCarga
-      if (!fechaRef) return false
-      const lp = d2s(getLunes(new Date(fechaRef + 'T00:00:00')))
-      return lp === wId2
-    })
-
     return DIAS.map((dia, i) => {
-      const fecha = d2s(addDays(lb2, i))
-      const pagosDelDia = pagosSem.filter(p => {
+      const fecha = d2s(addDays(lb, i))
+      const pagosDelDia = pagosSemana.filter(p => {
         if (p.estado === 'Pagado') return p.fechaPago === fecha
-        const esDiferido = p.tipoPago === 'CHQ' || (p.tipoPago && p.tipoPago.startsWith('Echeq'))
-        if (esDiferido) return false
         if (p.estado === 'Pendiente' && p.fechaPago && p.fechaPago < hoy) return fecha === hoy
         return p.fechaPago === fecha
       })
@@ -93,8 +82,7 @@ export default function Dashboard() {
       const echeq = pagosDelDia.filter(p => p.tipoPago && p.tipoPago.startsWith('Echeq')).reduce((s, p) => s + (p.gastoARS || 0), 0)
       return { dia, fecha, Efectivo: efectivo, Transferencia: transferencia, Echeq: echeq, total: efectivo + transferencia + echeq, pagos: pagosDelDia }
     })
-  }, [data.pagos, weekOffset])
-
+  }, [pagosSemana, weekOffset])
   const pagosDelDiaSeleccionado = selectedDay ? chartData.find(d => d.dia === selectedDay)?.pagos || [] : []
 
   const toggleTipo = (tipo) => setActiveTipos(prev => ({ ...prev, [tipo]: !prev[tipo] }))
