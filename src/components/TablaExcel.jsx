@@ -1,4 +1,5 @@
 import { fDate, fARS, fUSD, getAlert } from '../utils/helpers'
+import { useState } from 'react'
 
 function TipoBadge({ tipo }) {
   if (!tipo) return null
