@@ -60,7 +60,7 @@ export default function Dashboard() {
     const lp = d2s(getLunes(new Date(fechaRef + 'T00:00:00')))
     return lp === wId
   }), [data.pagos, wId])
-  
+
   const arrastre = weekOffset >= 0
     ? data.pagos.filter(p => d2s(getLunes(new Date(p.fechaCarga + 'T00:00:00'))) < wId && p.estado === 'Pendiente')
     : []
@@ -74,7 +74,7 @@ export default function Dashboard() {
       const fecha = d2s(addDays(lb, i))
       const pagosDelDia = pagosSemana.filter(p => {
         if (p.estado === 'Pagado') return p.fechaPago === fecha
-        if (p.estado === 'Pendiente' && p.fechaPago && p.fechaPago < hoy) return fecha === hoy
+        if (p.estado === 'Pendiente' && p.fechaPago && p.fechaPago <= hoy) return fecha === hoy
         return p.fechaPago === fecha
       })
       const efectivo = pagosDelDia.filter(p => p.tipoPago === 'Efectivo').reduce((s, p) => s + (p.gastoARS || 0), 0)
