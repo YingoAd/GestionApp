@@ -69,7 +69,7 @@ export default function Dashboard() {
   const tpgARS = pagosSemana.filter(p => p.estado === 'Pagado' && p.gastoARS).reduce((s, p) => s + p.gastoARS, 0)
 
  const chartData = useMemo(() => {
-    const hoy = d2s(new Date())
+    const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
     return DIAS.map((dia, i) => {
       const fecha = d2s(addDays(lb, i))
       const pagosDelDia = pagosSemana.filter(p => {
@@ -88,7 +88,7 @@ export default function Dashboard() {
       return { dia, fecha, Efectivo: efectivo, Transferencia: transferencia, Echeq: echeq, total: efectivo + transferencia + echeq, pagos: pagosDelDia }
     })
   }, [pagosSemana, weekOffset])
-  
+
   const pagosDelDiaSeleccionado = selectedDay ? chartData.find(d => d.dia === selectedDay)?.pagos || [] : []
 
   const toggleTipo = (tipo) => setActiveTipos(prev => ({ ...prev, [tipo]: !prev[tipo] }))

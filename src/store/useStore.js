@@ -118,6 +118,7 @@ let _data = {
 }
 // Corrimiento automatico de fechas diferidos
 const hoy = new Date()
+hoy.setHours(hoy.getHours() - 3) // UTC-3 Argentina
 hoy.setHours(0,0,0,0)
 
 const nextHabil = (fechaStr) => {
