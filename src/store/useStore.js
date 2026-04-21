@@ -194,6 +194,7 @@ async function loadFromSupabase() {
       gastoUSD: p.gasto_usd,
       estado: p.estado,
       obs: p.obs,
+      fechaVctoOriginal: p.fecha_vcto_original || null,
     }))
 
     // Convertir proveedores

@@ -73,21 +73,22 @@ export default function Dashboard() {
     return DIAS.map((dia, i) => {
       const fecha = d2s(addDays(lb, i))
       const pagosDelDia = pagosSemana.filter(p => {
-  if (p.estado === 'Pagado') return p.fechaPago === fecha
-  if (p.estado === 'Emitido') return p.fechaPago === fecha
-  // Pendientes — si su fecha ya pasó o es hoy, mostrar en hoy
-  if (p.estado === 'Pendiente') {
-    if (p.fechaPago && p.fechaPago <= hoy) return fecha === hoy
-    return p.fechaPago === fecha
-  }
-  return p.fechaPago === fecha
-})
+        if (p.estado === 'Pagado') return p.fechaPago === fecha
+        if (p.estado === 'Emitido') return p.fechaPago === fecha
+        if (p.estado === 'Pendiente') {
+          if (p.fechaPago && p.fechaPago <= hoy) return fecha === hoy
+          return p.fechaPago === fecha
+        }
+        return p.fechaPago === fecha
+      })
+      if (i === 0) console.log('Lunes pagosDelDia:', pagosDelDia.length, 'pagosSemana:', pagosSemana.length, 'hoy:', hoy, 'fecha:', fecha)
       const efectivo = pagosDelDia.filter(p => p.tipoPago === 'Efectivo').reduce((s, p) => s + (p.gastoARS || 0), 0)
       const transferencia = pagosDelDia.filter(p => p.tipoPago === 'Transferencia').reduce((s, p) => s + (p.gastoARS || 0), 0)
       const echeq = pagosDelDia.filter(p => p.tipoPago && p.tipoPago.startsWith('Echeq')).reduce((s, p) => s + (p.gastoARS || 0), 0)
       return { dia, fecha, Efectivo: efectivo, Transferencia: transferencia, Echeq: echeq, total: efectivo + transferencia + echeq, pagos: pagosDelDia }
     })
   }, [pagosSemana, weekOffset])
+  
   const pagosDelDiaSeleccionado = selectedDay ? chartData.find(d => d.dia === selectedDay)?.pagos || [] : []
 
   const toggleTipo = (tipo) => setActiveTipos(prev => ({ ...prev, [tipo]: !prev[tipo] }))
