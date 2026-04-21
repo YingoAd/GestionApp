@@ -17,52 +17,48 @@ function TipoBadge({ tipo }) {
 }
 
 function EstadoBtn({ pago, onToggle, cfg }) {
-  const al = getAlert(pago, cfg)
+  const [open, setOpen] = useState(false)
   const esDiferido = pago.tipoPago === 'CHQ' || (pago.tipoPago && pago.tipoPago.startsWith('Echeq'))
+  
+  const estadosDisponibles = esDiferido
+    ? ['Pendiente', 'Emitido', 'Debitado']
+    : ['Pendiente', 'Pagado']
 
-  if (pago.estado === 'Pagado' || pago.estado === 'Emitido') {
-    const label = esDiferido ? 'Emitido' : 'Pagado'
-    return (
-      <button
-        onClick={() => onToggle(pago.id, 'Pendiente')}
-        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--green-border)', background: 'var(--green-bg)', color: 'var(--green)', whiteSpace: 'nowrap' }}>
-        {label}
-      </button>
-    )
+  const colorEstado = {
+    Pendiente: { bg: 'var(--bg3)', color: 'var(--text2)', border: 'var(--border2)' },
+    Pagado: { bg: 'var(--green-bg)', color: 'var(--green)', border: 'var(--green-border)' },
+    Emitido: { bg: 'var(--yellow-bg)', color: 'var(--yellow)', border: 'var(--yellow-border)' },
+    Debitado: { bg: 'var(--blue-bg)', color: 'var(--blue)', border: 'var(--blue-border)' },
+    Vencido: { bg: 'var(--red-bg)', color: 'var(--red)', border: 'var(--red-border)' },
   }
-  if (pago.estado === 'Debitado') {
-    return (
-      <button
-        onClick={() => onToggle(pago.id, 'Pendiente')}
-        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--blue-border)', background: 'var(--blue-bg)', color: 'var(--blue)', whiteSpace: 'nowrap' }}>
-        Debitado
-      </button>
-    )
-  }
-  if (pago.estado === 'Vencido' || al === 'red') {
-    return (
-      <button
-        onClick={() => onToggle(pago.id, esDiferido ? 'Emitido' : 'Pagado')}
-        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--red-border)', background: 'var(--red-bg)', color: 'var(--red)', whiteSpace: 'nowrap' }}>
-        {al === 'red' && pago.estado !== 'Vencido' ? 'Atrasado' : 'Vencido'}
-      </button>
-    )
-  }
-  if (al === 'yellow') {
-    return (
-      <button
-        onClick={() => onToggle(pago.id, esDiferido ? 'Emitido' : 'Pagado')}
-        style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--yellow-border)', background: 'var(--yellow-bg)', color: 'var(--yellow)', whiteSpace: 'nowrap' }}>
-        Proximo
-      </button>
-    )
-  }
+
+  const al = getAlert(pago, cfg)
+  const estadoVisual = al === 'red' && pago.estado === 'Pendiente' ? 'Vencido' : 
+                       al === 'yellow' && pago.estado === 'Pendiente' ? 'Proximo' : 
+                       pago.estado
+  const colors = colorEstado[pago.estado] || colorEstado['Pendiente']
+
   return (
-    <button
-      onClick={() => onToggle(pago.id, esDiferido ? 'Emitido' : 'Pagado')}
-      style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid var(--border2)', background: 'var(--bg3)', color: 'var(--text2)', whiteSpace: 'nowrap' }}>
-      Pendiente
-    </button>
+    <div style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(v => !v)}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: '1px solid', borderColor: colors.border, background: colors.bg, color: colors.color, whiteSpace: 'nowrap' }}>
+        {estadoVisual}
+        <span style={{ fontSize: 8 }}>▼</span>
+      </button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 49 }} />
+          <div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 50, background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', boxShadow: 'var(--shadow)', padding: '4px 0', minWidth: 120, marginTop: 4 }}>
+            {estadosDisponibles.map(e => (
+              <button key={e} onClick={() => { onToggle(pago.id, e); setOpen(false) }}
+                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '7px 12px', background: pago.estado === e ? 'var(--bg3)' : 'transparent', border: 'none', color: colorEstado[e]?.color || 'var(--text)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                {e}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 
