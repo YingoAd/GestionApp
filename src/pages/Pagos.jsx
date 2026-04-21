@@ -288,17 +288,17 @@ const [pagadoFechaInput, setPagadoFechaInput] = useState('')
   const [nroChequeModal, setNroChequeModal] = useState(null)
 const [nroChequeInput, setNroChequeInput] = useState('')
 
-const toggleEstado = (id, nuevoEstado) => {
+const toggleEstado = (id, nuevoEstado, skipModal = false) => {
   const pago = data.pagos.find(p => p.id === id)
   const esDiferido = pago.tipoPago === 'CHQ' || (pago.tipoPago && pago.tipoPago.startsWith('Echeq'))
   
-  if (esDiferido && nuevoEstado === 'Emitido') {
+  if (!skipModal && esDiferido && nuevoEstado === 'Emitido') {
     setNroChequeInput(pago.nroComprobante || '')
     setNroChequeModal(id)
     return
   }
 
-  if (!esDiferido && nuevoEstado === 'Pagado') {
+  if (!skipModal && !esDiferido && nuevoEstado === 'Pagado') {
     setPagadoFechaInput(new Date().toISOString().split('T')[0])
     setPagadoModal(id)
     return

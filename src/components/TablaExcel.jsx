@@ -83,11 +83,11 @@ export default function TablaExcel({ pagos, cfg, onToggle, onDelete, onEdit, com
   }
 
   const aplicarMasivo = () => {
-    if (!estadoMasivo || !seleccionados.length) return
-    seleccionados.forEach(id => onToggle(id, estadoMasivo))
-    setSeleccionados([])
-    setEstadoMasivo('')
-  }
+  if (!estadoMasivo || !seleccionados.length) return
+  seleccionados.forEach(id => onToggle(id, estadoMasivo, true))
+  setSeleccionados([])
+  setEstadoMasivo('')
+}
 
   const tdStyle = (extra = {}) => ({
     padding: '7px 10px',
