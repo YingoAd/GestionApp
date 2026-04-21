@@ -152,6 +152,26 @@ if (pagosCorregidos.length > 0) {
   })
 }
 
+// Corrimiento automatico de pagos EFT/TRF/Efectivo pendientes
+const pagosEFTCorregidos = []
+_data.pagos = _data.pagos.map(p => {
+  const esDiferido = p.tipoPago === 'CHQ' || (p.tipoPago && p.tipoPago.startsWith('Echeq'))
+  if (esDiferido || p.estado !== 'Pendiente' || !p.fechaPago) return p
+  const fechaVcto = new Date(p.fechaPago + 'T00:00:00')
+  if (fechaVcto >= hoy) return p
+  // Fecha vencida — mover al proximo dia habil
+  const nuevaFecha = nextHabil(p.fechaPago)
+  if (nuevaFecha === p.fechaPago) return p
+  pagosEFTCorregidos.push({ ...p, fechaPago: nuevaFecha })
+  return { ...p, fechaPago: nuevaFecha }
+})
+
+if (pagosEFTCorregidos.length > 0) {
+  pagosEFTCorregidos.forEach(p => {
+    supabase.from('pagos').update({ fecha_pago: p.fechaPago }).eq('id', p.id)
+  })
+}
+
 // Sincronizar corrimientos a Supabase en background
 if (pagosCorregidos.length > 0) {
   pagosCorregidos.forEach(p => {
