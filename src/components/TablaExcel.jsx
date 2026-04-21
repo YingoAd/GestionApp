@@ -22,22 +22,23 @@ function EstadoBtn({ pago, onToggle, cfg }) {
   const esDiferido = pago.tipoPago === 'CHQ' || (pago.tipoPago && pago.tipoPago.startsWith('Echeq'))
   
   const estadosDisponibles = esDiferido
-    ? ['Pendiente', 'Emitido', 'Debitado']
-    : ['Pendiente', 'Pagado']
+  ? ['Pendiente', 'Emitido', 'Debitado']
+  : ['Pendiente', 'Pagado']
 
-  const colorEstado = {
-    Pendiente: { bg: 'var(--bg3)', color: 'var(--text2)', border: 'var(--border2)' },
-    Pagado: { bg: 'var(--green-bg)', color: 'var(--green)', border: 'var(--green-border)' },
-    Emitido: { bg: 'var(--yellow-bg)', color: 'var(--yellow)', border: 'var(--yellow-border)' },
-    Debitado: { bg: 'var(--blue-bg)', color: 'var(--blue)', border: 'var(--blue-border)' },
-    Vencido: { bg: 'var(--red-bg)', color: 'var(--red)', border: 'var(--red-border)' },
-  }
+const colorEstado = {
+  Pendiente: { bg: 'var(--bg3)', color: 'var(--text2)', border: 'var(--border2)' },
+  Pagado: { bg: 'var(--green-bg)', color: 'var(--green)', border: 'var(--green-border)' },
+  Emitido: { bg: 'var(--yellow-bg)', color: 'var(--yellow)', border: 'var(--yellow-border)' },
+  Debitado: { bg: 'var(--blue-bg)', color: 'var(--blue)', border: 'var(--blue-border)' },
+}
 
-  const al = getAlert(pago, cfg)
-  const estadoVisual = al === 'red' && pago.estado === 'Pendiente' ? 'Vencido' : 
-                       al === 'yellow' && pago.estado === 'Pendiente' ? 'Proximo' : 
-                       pago.estado
-  const colors = colorEstado[pago.estado] || colorEstado['Pendiente']
+const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
+const estadoVisual = !esDiferido && pago.estado === 'Pendiente' && pago.fechaPago && pago.fechaPago < hoy
+  ? 'Arrastre'
+  : pago.estado
+
+const colorArrastre = { bg: 'rgba(251,146,60,.15)', color: '#fb923c', border: '#fb923c' }
+const colors = estadoVisual === 'Arrastre' ? colorArrastre : (colorEstado[pago.estado] || colorEstado['Pendiente'])
 
   return (
     <div style={{ position: 'relative' }}>
