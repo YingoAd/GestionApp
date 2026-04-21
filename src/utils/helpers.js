@@ -12,7 +12,11 @@ export const addDays = (d, n) => {
   return x
 }
 
-export const d2s = d => d.toISOString().split('T')[0]
+export const d2s = (d) => {
+  if (!d) return ''
+  const date = d instanceof Date ? d : new Date(d)
+  return date.toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
+}
 export const s2d = s => new Date(s + 'T00:00:00')
 
 export const fDate = s => {
