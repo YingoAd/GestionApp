@@ -339,18 +339,31 @@ const confirmarEmision = () => {
 
 const confirmarEmisionMasiva = () => {
   const ids = emisionMasivaModal
-  ids.forEach(id => {
-    update(d => {
-      const p = d.pagos.find(p => p.id === id)
-      const updated = { ...p, estado: 'Emitido', nroComprobante: emisionMasivaInput || p.nroComprobante }
-      return {
-        ...d,
-        pagos: d.pagos.map(p => p.id === id ? updated : p),
-        _pagoChanged: updated,
-        _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
-        _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
-      }
+  update(d => {
+    const nuevosPagos = d.pagos.map(p => {
+      if (!ids.includes(p.id)) return p
+      return { ...p, estado: 'Emitido', nroComprobante: emisionMasivaInput || p.nroComprobante }
     })
+    const ultimoActualizado = nuevosPagos.find(p => ids.includes(p.id))
+    return {
+      ...d,
+      pagos: nuevosPagos,
+      _pagoChanged: ultimoActualizado,
+      _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+      _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
+    }
+  })
+  // Sincronizar todos a Supabase
+  ids.forEach(id => {
+    const pago = data.pagos.find(p => p.id === id)
+    if (pago) {
+      import('../supabase').then(({ supabase }) => {
+        supabase.from('pagos').update({ 
+          estado: 'Emitido', 
+          nro_comprobante: emisionMasivaInput || pago.nroComprobante 
+        }).eq('id', id)
+      })
+    }
   })
   setEmisionMasivaModal(null)
   setEmisionMasivaInput('')
