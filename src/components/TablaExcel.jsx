@@ -84,6 +84,19 @@ export default function TablaExcel({ pagos, cfg, onToggle, onDelete, onEdit, com
 
   const aplicarMasivo = () => {
   if (!estadoMasivo || !seleccionados.length) return
+  // Si es Emitido y hay diferidos seleccionados, avisar al padre
+  if (estadoMasivo === 'Emitido') {
+    const hayDiferidos = seleccionados.some(id => {
+      const p = pagos.find(p => p.id === id)
+      return p && (p.tipoPago === 'CHQ' || p.tipoPago?.startsWith('Echeq'))
+    })
+    if (hayDiferidos && onBulkEmitir) {
+      onBulkEmitir(seleccionados)
+      setSeleccionados([])
+      setEstadoMasivo('')
+      return
+    }
+  }
   seleccionados.forEach(id => onToggle(id, estadoMasivo, true))
   setSeleccionados([])
   setEstadoMasivo('')

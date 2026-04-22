@@ -11,6 +11,7 @@ const CUENTAS = ["BCOOP-024049/5","BCOOP-013170/4","BCOOP-023030/2","BCOOP-02351
 const ESTADOS = ["Pendiente","Pagado","Vencido"]
 const RECIBOS = ["Factura A","Factura B","Factura C","Recibo","Remito","Otro"]
 
+
 function emptyPago(obras, rubros) {
   return {
     fechaCarga: d2s(getLunes()),
@@ -233,10 +234,12 @@ export default function Pagos() {
   const location = useLocation()
   const [modal, setModal] = useState(null)
   const [filt, setFilt] = useState({ obra: '', rubro: '', tipos: [], estado: '', q: '' })
-const [tiposOpen, setTiposOpen] = useState(false)
+  const [tiposOpen, setTiposOpen] = useState(false)
   const fSet = (k, v) => setFilt(p => ({ ...p, [k]: v }))
   const [pagadoModal, setPagadoModal] = useState(null)
-const [pagadoFechaInput, setPagadoFechaInput] = useState('')
+  const [pagadoFechaInput, setPagadoFechaInput] = useState('')
+  const [emisionMasivaModal, setEmisionMasivaModal] = useState(null) // array de ids
+  const [emisionMasivaInput, setEmisionMasivaInput] = useState('')
 
   const filtered = useMemo(() => data.pagos.filter(p => {
     if (filt.obra && p.obra !== filt.obra) return false
@@ -334,6 +337,25 @@ const confirmarEmision = () => {
   setNroChequeInput('')
 }
 
+const confirmarEmisionMasiva = () => {
+  const ids = emisionMasivaModal
+  ids.forEach(id => {
+    update(d => {
+      const p = d.pagos.find(p => p.id === id)
+      const updated = { ...p, estado: 'Emitido', nroComprobante: emisionMasivaInput || p.nroComprobante }
+      return {
+        ...d,
+        pagos: d.pagos.map(p => p.id === id ? updated : p),
+        _pagoChanged: updated,
+        _pagoDeleted: null, _proveedorChanged: null, _proveedorDeleted: null,
+        _ingresoChanged: null, _ingresoDeleted: null, _configChanged: null,
+      }
+    })
+  })
+  setEmisionMasivaModal(null)
+  setEmisionMasivaInput('')
+}
+
 const confirmarPagado = () => {
   const id = pagadoModal
   update(d => {
@@ -427,7 +449,7 @@ const any = filt.q || filt.obra || filt.rubro || filt.estado || filt.tipos.lengt
       </div>
 
       <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 'var(--r)', overflow: 'hidden' }}>
-        <TablaExcel pagos={filtered} cfg={data.alertConfig} onToggle={toggleEstado} onDelete={deletePago} onEdit={openEdit} />
+        <TablaExcel pagos={filtered} cfg={data.alertConfig} onToggle={toggleEstado} onDelete={deletePago} onEdit={openEdit} onBulkEmitir={(ids) => { setEmisionMasivaInput(''); setEmisionMasivaModal(ids) }} />
       </div>
 
      {modal && (
@@ -474,6 +496,40 @@ const any = filt.q || filt.obra || filt.rubro || filt.estado || filt.tipos.lengt
         </button>
       </div>
     </div>
+    {emisionMasivaModal && (
+  <div onClick={e => { if(e.target===e.currentTarget) setEmisionMasivaModal(null) }}
+    style={{ position:'fixed',inset:0,background:'rgba(0,0,0,.75)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100 }}>
+    <div style={{ background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:12,width:'100%',maxWidth:400,padding:24 }}>
+      <div style={{ fontSize:15,fontWeight:700,marginBottom:8 }}>Confirmar emision masiva</div>
+      <div style={{ fontSize:12,color:'var(--text2)',marginBottom:16 }}>
+        {emisionMasivaModal?.length} cheques seleccionados. Ingresa el numero de cheque/echeq.
+      </div>
+      <div style={{ display:'flex',flexDirection:'column',gap:4,marginBottom:20 }}>
+        <label style={{ fontSize:10,color:'var(--text2)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.5px' }}>
+          Nro. Cheque / eCheq
+        </label>
+        <input
+          value={emisionMasivaInput}
+          onChange={e => setEmisionMasivaInput(e.target.value)}
+          placeholder="Ej: 00012345 o ECH-123456"
+          style={{ width:'100%' }}
+          autoFocus
+          onKeyDown={e => e.key === 'Enter' && confirmarEmisionMasiva()}
+        />
+      </div>
+      <div style={{ display:'flex',justifyContent:'flex-end',gap:8 }}>
+        <button onClick={() => setEmisionMasivaModal(null)}
+          style={{ background:'transparent',border:'1px solid var(--border)',color:'var(--text2)',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Cancelar
+        </button>
+        <button onClick={confirmarEmisionMasiva}
+          style={{ background:'var(--accent)',color:'#fff',border:'none',borderRadius:'var(--rs)',padding:'7px 14px',fontSize:12,fontWeight:600,cursor:'pointer' }}>
+          Confirmar emision
+        </button>
+      </div>
+    </div>
+  </div>
+)}
   </div>
 )}
 {pagadoModal && (
